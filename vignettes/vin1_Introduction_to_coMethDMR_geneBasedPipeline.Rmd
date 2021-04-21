@@ -1,0 +1,457 @@
+---
+title: "Introduction to coMethDMR"
+author: "Lissette Gomez, Gabriel Odom, Tiago Chedraoui Silva, Lanyu Zhang, and Lily Wang"
+date: "March 2021"
+output: 
+    BiocStyle::html_document:
+    toc_float: true
+    toc: true
+    df_print: paged
+    code_download: false
+    toc_depth: 3
+editor_options:
+  chunk_output_type: inline    
+vignette: >
+    %\VignetteIndexEntry{"Introduction to coMethDMR"} 
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+```
+
+`coMethDMR` is an R package that identifies genomic regions that are both co-methylated and differentially
+methylated in Illumina array datasets. Instead of testing all CpGs within a genomic region, `coMethDMR` carries out an additional step that selects co-methylated sub-regions first without using any outcome information. Next, `coMethDMR` tests association between methylation within the sub-region and continuous phenotype using a random coefficient mixed effects model, which models both variations between CpG sites within the region and differential methylation simultaneously. 
+
+
+# 1. Quick start
+
+## 1.1 Installation 
+
+The latest version can be installed by
+
+```{r eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("TransBioInfoLab/MethReg")
+```
+
+After installation, the `coMethDMR` package can be loaded into R using:
+```{r message=FALSE}
+library(coMethDMR)
+```
+
+If you are running the `coMethDMR` package for the first time, you will  also need to install the `sesameData` package. 
+This will just take a few minutes and it will allow you to download complementary data necessary to run `coMethDMR` package otherwise you won't be able to go forward. 
+```{r eval=FALSE}
+BiocManager::install("sesameData")
+```
+
+After installation, the `sesameData` package can be loaded into R using:
+```{r message=FALSE}
+library(sesameData)
+```
+
+## 1.2 Datasets
+
+The input of `coMethDMR` are methylation beta values. We assume quality control and normalization of the methylation dataset have been performed, by R packages such as `minfi` or `RnBeads`. For illustration, we use a subset of prefrontal cortex methylation data (GEO GSE59685) from a recent Alzheimer's disease epigenome-wide association study which was described in Lunnon et al. (2014). This example dataset contains beta values for 8552 CpGs on chromosome 22 for a random selection of 20 subjects. 
+
+
+```{r}
+data(betasChr22_df)
+betasChr22_df[1:5, 1:5]
+```
+
+The corresponding phenotype dataset included variables `stage` (Braak AD stage), `subject.id`, `slide` (batch effect), `Sex`, `Sample` and `age.brain` (age of the brain donor). Please note the phenotype file needs to have a variable called "Sample" that will be used by coMethDMR to link to the methylation dataset. 
+
+```{r}
+data(pheno_df)
+head(pheno_df)
+```
+
+
+## 1.3 A quick work through of coMethDMR 
+For illustration, suppose we are interested in identifying co-methylated genomic regions associated with AD stages (`stage` treated as a linear variable). Here we demonstrate analysis of genomic regions mapped to CpG islands on chromosome 22. However the workflow can be similarly conducted for other types of genomic regions. See details in Section 2.1 below for gene based pipeline that tests genic and intergenic regions. 
+
+There are several steps: (1) obtain CpGs located closely (see details in Section 2.1 below) in genomic regions mapped to CpG islands, (2) identify co-methylated regions, and (3) test co-methylated regions against the outcome variable AD stage. 
+
+For the first step, we use the following commands: 
+
+```{r}
+CpGisland_ls <- readRDS(
+  system.file(
+    "extdata",
+    "CpGislandsChr22_ex.RDS",
+    package = 'coMethDMR',
+    mustWork = TRUE
+    )
+)
+```
+
+Here, `CpGisland_ls` is a list of 20 items, with each item of the list including a group of CpG probe IDs located closely within a particular CpG island region. Section 2.1 discusses how to import additional types of genomic regions. 
+
+Next, we identify co-methylated regions based on Mvalues.  
+```{r CoMethAllRegions}
+coMeth_ls <- CoMethAllRegions(
+  dnam = betasChr22_df,
+  betaToM = TRUE, #converts to mvalues
+  method = "pearson",
+  CpGs_ls = CpGisland_ls,
+  arrayType = "450k",
+  returnAllCpGs = FALSE, 
+  output = "CpGs",
+  nCores_int = 1
+)
+
+coMeth_ls
+```
+
+`coMeth_ls` is list with that contains groups of CpG probeIDs corresponding to co-methylated regions. Three comethylated regions were identified in this example. 
+
+If we want to look at co-methylation within the first co-methylated region: 
+
+```{r message=FALSE}
+WriteCorrPlot <- function(beta_mat){
+
+  require(corrplot)
+  require(coMethDMR)
+
+  CpGs_char <- row.names(beta_mat)
+
+  CpGsOrd_df <- OrderCpGsByLocation(
+    CpGs_char, arrayType = c("450k"), output = "dataframe"
+  )
+
+  betaOrdered_mat <- t(beta_mat[CpGsOrd_df$cpg ,])
+
+  corr <- cor(
+    betaOrdered_mat, method = "spearman", use = "pairwise.complete.obs"
+  )
+
+  corrplot(corr, method="number", number.cex = 1, tl.cex = 0.7)
+}
+
+# subsetting beta values to include only co-methylated probes
+betas_df <- subset(
+  betasChr22_df, 
+  row.names(betasChr22_df) %in% coMeth_ls[[1]]
+)
+
+WriteCorrPlot(betas_df)
+```
+
+Next, we test these co-methylated regions against `stage` using a random coefficient model (more details in section 2.3 below).  
+
+Some messages are generated during mixed models fitting, which are saved to the file specified by `outLogFile`. The interpretations of these messages can be found in the FAQs at the end of this document (see Section 3, item (1) and (2)).  
+
+```{r lmmTestAllRegions_1}
+
+out_df <- lmmTestAllRegions(
+   betas = betasChr22_df,
+   region_ls = coMeth_ls,
+   pheno_df,
+   contPheno_char = "stage",
+   covariates_char = NULL,
+   modelType = "randCoef",
+   arrayType = "450k"
+   # generates a log file in the current directory
+   # outLogFile = paste0("lmmLog_", Sys.Date(), ".txt")
+)
+
+out_df
+
+```
+Here `out_df` is a data frame of genomic regions, with corresponding p-values and false discovery rate (FDRs) from the random coefficient mixed model. 
+
+We can annotate these results by adding corresponding genes and probes mapped to the genomic regions. 
+
+```{r AnnotateResults, message = FALSE}
+
+outAnno_df <- AnnotateResults(
+  lmmRes_df = out_df,
+  arrayType = "450k"
+)
+
+outAnno_df
+
+```
+
+To further examine the significant regions, we can also extract individual CpG p-values within these significant regions. For example, for the most significant region `chr22:18268062-18268249`, 
+```{r CpGsInfoOneRegion}
+outCpGs_df <- CpGsInfoOneRegion(
+ regionName_char = "chr22:18268062-18268249",
+ betas_df = betasChr22_df,
+ pheno_df, contPheno_char = "stage",
+ covariates_char = NULL,
+ arrayType = "450k"
+)
+
+outCpGs_df
+
+```
+
+These CpGs mapped to intergenic regions, so there are no gene names associated with the probes. For genic regions such as `chr22:19709548-19709755`, we would have results such as the following:
+
+```{r message = FALSE}
+library("GenoGAM")
+```
+
+
+```{r CpGsInfoOneRegion_2}
+CpGsInfoOneRegion(
+  regionName_char = "chr22:19709548-19709755",
+  betas_df = betasChr22_df,
+  pheno_df, contPheno_char = "stage",
+  covariates_char = NULL,
+  arrayType = "450k"
+)
+```
+
+# 2. Details of `coMethDMR` workflow
+
+## 2.1 Genomic regions tested in gene based pipeline
+
+Genomic regions on the Illumina arrays can be defined based on their relations to genes or CpG Islands. To reduce redundancy in the tested genomic regions, we recommend first testing genic and intergenic regions, then add annotations to each genomic region for their relation to CpG islands. 
+
+In `coMethDMR` package, for 450k arrays, the relevant genomic regions to be analyzed are in files `450k_Gene_3_200.RDS` and `450k_InterGene_3_200.RDS`. For EPIC arrays, the relevant genomic regions are in files `EPIC_Gene_3_200.RDS` and `EPIC_InterGene_3_200.RDS`.
+
+These files were created using the function `WriteCloseByAllRegions`, briefly, for genic regions, within each gene, we identified clusters of CpGs located closely (i.e. the maximum separation between any two consecutive probes is 200bp; `maxGap = 200`), and we required each cluster to have at least 3 CpGs (`minCpGs = 3`). For intergenic regions, we identified clusters CpGs similarly for each chromosome. To extract clusters of close-by CpGs from pre-defined genomic regions with different values of `maxGap` and `minCpGs`, the `WriteCloseByAllRegions` function can be used. 
+
+The pre-computed genomic regions can be accessed using the following commands. For geneic regions in 450k arrays,  
+
+```{r}
+gene_ls <- readRDS(
+  system.file(
+    "extdata",
+    "450k_Gene_3_200.RDS",
+    package = 'coMethDMR',
+    mustWork = TRUE
+    )
+)
+```
+
+Here `gene_ls` is a list, with each item containing a character vector of CpGs IDs for a particular region in a gene.
+
+Vignette # 2 illustrates how to leverage parallel computing via `BiocParallel` R package to make gene-based analysis fast. 
+
+## 2.2 When there are co-variate variables in dataset to consider
+
+Before identifying co-methylated clusters, we recommend removing uninteresting technical and biological effects, so that the resulting co-methylated clusters are only driven by the biological factors we are interested in. This can be accomplished using the `GetResiduals` function. 
+
+For example, the following script computes residuals from linear model 
+`Mvalues ~ age.brain + sex + slide`
+
+```{r reduce_data, include = FALSE}
+Cgi_ls <- readRDS(
+  system.file(
+    "extdata",
+    "CpGislandsChr22_ex.RDS",
+    package = 'coMethDMR',
+    mustWork = TRUE
+    )
+)
+betasChr22_df <- betasChr22_df[rownames(betasChr22_df) %in% unlist(Cgi_ls)[1:20],]
+```
+
+```{r GetResiduals}
+resid_df <- GetResiduals(
+  dnam = betasChr22_df,
+  betaToM = TRUE, #converts to Mvalues for fitting linear model 
+  pheno_df = pheno_df,
+  covariates_char = c("age.brain", "sex", "slide")
+)
+```
+
+## 2.2 Algorithm for identifying co-methylated regions
+
+Within each genomic region, coMethDMR identifies contiguous and co-methylated CpGs sub-regions without using any outcome information. To select these co-methylated sub-regions, we use the `rdrop` statistic, which is the correlation between each CpG with the sum of methylation levels in all other CpGs. The default is `rDropThresh_num = 0.4`. We recommend this setting based on our simulation study. Note that higher `rDropThresh_num` values lead to fewer co-methylated regions.
+
+Again, for illustration, we use CpG islands. For example, if we are interested in identifying co-methylated sub-region within the first genomic region in `Cgi_ls`:  
+
+```{r CoMethAllRegions_2}
+Cgi_ls <- readRDS(
+  system.file(
+    "extdata",
+    "CpGislandsChr22_ex.RDS",
+    package = 'coMethDMR',
+    mustWork = TRUE
+    )
+)
+
+coMeth_ls <- CoMethAllRegions(
+  dnam = resid_df,
+  betaToM = FALSE,
+  method = "pearson",
+  CpGs_ls = Cgi_ls[1],
+  arrayType = "450k",
+  returnAllCpGs = FALSE,
+  output = "CpGs"
+)
+
+coMeth_ls
+
+```
+
+The results indicate there is no co-methylated sub-region within the first genomic region. 
+
+Next we look at a region (5th region in `Cgi_ls`) where there is a co-methylated sub-region: 
+
+```{r CoMethAllRegions_3}
+coMeth_ls <- CoMethAllRegions(
+  dnam = resid_df,
+  betaToM = FALSE,
+  CpGs_ls = Cgi_ls[5],
+  arrayType = "450k",
+  returnAllCpGs = FALSE, 
+  output = "CpGs"
+)
+
+coMeth_ls
+```
+
+`coMeth_ls` is a list, where each item is a list of CpG probe IDs for a co-methylated sub-region. 
+
+If we want to see the detailed output of the coMethDMR algorithm, that is, how the co-methylated region was obtained, we can specify `output = "dataframe"`: 
+
+```{r CoMethAllRegions_4}
+coMethData_df <- CoMethAllRegions(
+  dnam = resid_df,
+  betaToM = FALSE,
+  CpGs_ls = Cgi_ls[5],
+  arrayType = "450k",
+  returnAllCpGs = FALSE, 
+  output = "dataframe"
+) [[1]]
+
+coMethData_df
+```
+
+`coMethData_df` provides the details on how the co-methylated region was obtained: Here `keep = 1` if `rDropThresh_num > 0.4` (i.e. a co-methylated CpG), and `keep_contigous` indicates if the probe is in a contiguous co-methylated region. Note that only the last 3 CpGs constitutes the co-methylated cluster.    
+
+## 2.3 Models for testing genomic regions against a continuous phenotype 
+
+To test association between a continuous phenotype and methylation values in a contiguous co-methylated region, two mixed models have been implemented in the function `lmmTestAllRegions`: a random coefficient mixed model (`modelType = "randCoef"`) and a simple linear mixed model (`modelType = "simple"`). 
+
+The random coefficient mixed model includes both a systematic component that models the mean for each group of CpGs, and a random component that models how each CpG varies with respect to the group mean (random probe effects). It also includes random sample effects that model correlations between multiple probes within the same sample. 
+
+More specifically, the random coefficient model is
+`methylation M value ~ contPheno_char + covariates_char + (1|Sample) + (contPheno_char|CpG).`
+The last term `(contPheno_char|CpG)` specifies both random intercepts and slopes for each CpG.
+
+The simple linear mixed model includes all the terms in the random coefficient model except random probe effects.
+
+The simple linear mixed model is
+
+`methylation M value ~ contPheno_char + covariates_char + (1|Sample)`
+
+To test one genomic region against the continuous phenotype `stage`, adjusting for `age.brain`: 
+```{r lmmTestAllRegions_2, message = FALSE}
+lmmTestAllRegions(
+  betas = betasChr22_df,
+  region_ls = coMeth_ls[1],
+  pheno_df,
+  contPheno_char = "stage",
+  covariates_char = "age.brain",
+  modelType = "randCoef",
+  arrayType = "450k"
+)
+```
+
+If we don't want to adjust for any covariate effect, we can set `covariates_char` to `NULL`: 
+
+```{r lmmTestAllRegions_3, message = FALSE}
+lmmTestAllRegions(
+  betas = betasChr22_df,
+  region_ls = coMeth_ls[1],
+  pheno_df,
+  contPheno_char = "stage",
+  covariates_char = NULL,
+  modelType = "randCoef",
+  arrayType = "450k"
+)
+```
+
+## 2.4 Analyzing a specific gene
+
+Finally, we demonstrate `coMethDMR` analysis for a particular gene, for example the `ARFGAP3` gene. 
+
+```{R, include = FALSE}
+data(betasChr22_df)
+```
+
+```{r message = FALSE}
+
+geneList <- readRDS(
+  system.file(
+    "extdata",
+    "450k_CpGstoGene_min3CpGs.RDS",
+    package = 'coMethDMR',
+    mustWork = TRUE
+  )
+)
+
+# list probes for this gene
+geneList$ARFGAP3
+
+
+# list probes located closely on this gene
+gene3_200 <- CloseBySingleRegion(
+  CpGs_char = geneList$ARFGAP3, arrayType = "450k", maxGap = 200, minCpGs = 3
+)
+CpGsOrdered_df <- lapply(gene3_200, OrderCpGsByLocation, arrayType = "450k", output = "dataframe")
+names(gene3_200) <- lapply(CpGsOrdered_df, NameRegion)
+
+gene3_200
+
+
+# co-methlyated region within the gene
+coMeth_ls <- CoMethAllRegions(
+  dnam = betasChr22_df,
+  betaToM = TRUE,
+  method = "pearson",
+  CpGs_ls = gene3_200,
+  arrayType = "450k",
+  returnAllCpGs = FALSE,
+  output = "CpGs"
+)
+
+coMeth_ls 
+
+# test the co-methylated regions within the gene
+results <- lmmTestAllRegions(
+  betas = betasChr22_df,
+  region_ls = coMeth_ls,
+  pheno_df,
+  contPheno_char = "stage",
+  covariates_char = "age.brain",
+  modelType = "randCoef",
+  arrayType = "450k"
+  # generates a log file in the current directory
+  # outLogFile = paste0("lmmLog_", Sys.Date(), ".txt")
+)
+
+# add annotation
+AnnotateResults(lmmRes_df = results, arrayType = "450k")
+
+```
+
+
+# 3. Frequently Asked Questions
+
+(1) What happens when mixed model fails to coverge (i.e. the warning "Model failed to converge with..." is resulted for a particular genomic region)?
+- In this case, the p-value for mixed model is set to 1. In our experiences with methylation datasets, genomic regions with strong signals typically converge. Convergence issues typically occurs when the amount of noise in data is high. 
+
+(2) When fitting mixed models with `lmmTestAllRegions` function, What does the message "boundary (singular) fit" mean? 
+- When mixed model is singular, at least one of the estimated variance components for intercepts or slopes random effects is 0, because there isn't enough variabilities in data to estimate the random effects. In this case, mixed model reduces to a fixed effects model. However, as our simulation studies have shown, the p-values obtained for these regions are still valid.
+
+
+
+# 4. Reference
+
+Lunnon K, Smith R, Hannon E, De Jager PL, Srivastava G, Volta M, Troakes C, Al-Sarraj S, Burrage J, Macdonald R, et al (2014) Methylomic profiling implicates cortical deregulation of ANK1 in Alzheimer's disease. Nat Neurosci 17:1164-1170.
+
+
+
