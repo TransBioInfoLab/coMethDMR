@@ -10,6 +10,11 @@ Bolstered documentation across all package help / manual files
 ## Bug Fixes
 
 
+# coMethDMR 0.99.1
+Migrated all clean files to this repository.
+All development history in https://github.com/TransBioInfoLab/coMethDMR_old
+
+
 
 # coMethDMR 0.0.0.9001
 
