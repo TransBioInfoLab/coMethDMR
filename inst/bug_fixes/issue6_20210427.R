@@ -244,6 +244,9 @@ lmmTest(
 # It appears that the issue is sample IDs being incorrectly modified by R when
 #   they are stored in the column names of a data frame. We will need to 
 #   1) confirm this is the issue (re-run on a second computer independently)
+#   Re-run on a second computer independently, we got the same results:
+#   chrom   start     end nCpGs     Estimate       StdErr      Stat    pValue
+#   1 chr16 2961485 2961799     6 -0.001313689 0.0007835092 -1.676673 0.0936064
 #   2) respond with a simple fix on the GitHub issue #6
 #   3) write an error in lmmTestAllRegions (and maybe even in lmmTest) to catch
 #      if the sample IDs from the betas and pheno data sets do not match (that
