@@ -78,6 +78,7 @@ Next, for demonstration, we select regions on chromosome 22.
 indx <- grep("chr22", names(closeByGeneAll_ls))
 
 closeByGene_ls <- closeByGeneAll_ls[indx]
+rm(closeByGeneAll_ls)
 length(closeByGene_ls)
 ```
 There are 676 genic regions to be tested for chromosome 22. The first region contains the CpGs
@@ -89,18 +90,18 @@ closeByGene_ls[1]
 ## Compute residuals
 This step removes uninteresting technical and biological effects using the `GetResiduals` function, so that the resulting co-methylated clusters are only driven by the biological factors we are interested in. 
 ```{r, results='hide'}
-# a0 <- Sys.time()
-resid_df <- GetResiduals(
-  dnam = betasChr22_df,
-  # converts to Mvalues for fitting linear model
-  betaToM = TRUE,  
-  pheno_df = pheno_df,
-  # Features in pheno_df used as covariates
-  covariates_char = c("age.brain", "sex", "slide")
-  # cores = 6
+system.time(
+  resid_df <- GetResiduals(
+    dnam = betasChr22_df,
+    # converts to Mvalues for fitting linear model
+    betaToM = TRUE,  
+    pheno_df = pheno_df,
+    # Features in pheno_df used as covariates
+    covariates_char = c("age.brain", "sex", "slide"),
+    nCores_int = 2
+  )
 )
-# Sys.time() - a0
-# This returns a matrix, not a data frame.
+# 80 seconds for 2 cores; 194.50 for 1
 ```
 
 This step took about 37 seconds when computing in serial, and about 82 seconds when computing over 6 cores.  
@@ -111,18 +112,17 @@ The cluster computing with the **BiocParallel** package involves simply changing
 
 Once we know how many cores we have available, we execute the `CoMethAllRegions()` function using each worker in the cluster, to find co-methylated clusters in the genic regions.  This step took about 99 seconds over 6 cores.
 ```{r BiocParallel_Gene, message=FALSE, error = TRUE}
-#a1 <- Sys.time()
-
-coMeth_ls <- CoMethAllRegions(
-  dnam = resid_df,
-  betaToM = FALSE,
-  method = "spearman",
-  arrayType = "450k",
-  CpGs_ls = closeByGene_ls,
-  nCores_int = 6
+system.time(
+  coMeth_ls <- CoMethAllRegions(
+    dnam = resid_df,
+    betaToM = FALSE,
+    method = "spearman",
+    arrayType = "450k",
+    CpGs_ls = closeByGene_ls,
+    nCores_int = 1
+  )
 )
-
-# Sys.time() - a1
+# 71 seconds for 2 cores; 103 for 1
 # 40 seconds over 6 cores on Mac
 # 99 seconds over 6 cores on Windows
 ```
@@ -132,8 +132,6 @@ The object `coMeth_ls` is a list, with each item containing the list of CpGs wit
 ## Testing the co-methylated regions
 Next we test these co-methylated regions against continuous phenotype `stage`, adjusting for covariates `age` and `sex`, by  executing the `lmmTestAllRegions()` function.  
 ```{r singleRegionType_lmmTest, warning=FALSE, results='hide', message = FALSE, error = TRUE}
-# a2 <- Sys.time()
-
 res_df <- lmmTestAllRegions(
   betas = betasChr22_df,
   region_ls = coMeth_ls,
@@ -142,13 +140,9 @@ res_df <- lmmTestAllRegions(
   covariates_char = c("age.brain", "sex"),
   modelType = "randCoef",
   arrayType = "450k",
-  nCores_int = 6,
-  outLogFile = "res_lmm_log.txt"
+  nCores_int = 1
+  # outLogFile = "res_lmm_log.txt"
 )
-
-# Sys.time() - a2
-# 15 seconds over 6 cores on Mac
-# 37 seconds over 6 cores on Windows
 ```
 
 Model fit messages and diagnostics for each region will be saved to the log file specified with the `outLogFile` argument. For a single region, this will return a one row of model fit statistics similar to the following:
@@ -199,47 +193,55 @@ Next we remove uninteresting biological and technical effects, execute the `CoMe
 ```{r loop_over_region_types, message=FALSE, results='hide'}
 # aAll <- Sys.time()
 
-residChr22_df <- GetResiduals(
-  dnam = betasChr22_df,
-  betaToM = TRUE, #converts to Mvalues for fitting linear model 
-  pheno_df = pheno_df,
-  covariates_char = c("age.brain", "sex", "slide"),
-  nCores_int = 6
+system.time(
+  residChr22_df <- GetResiduals(
+    dnam = betasChr22_df,
+    betaToM = TRUE, #converts to Mvalues for fitting linear model 
+    pheno_df = pheno_df,
+    covariates_char = c("age.brain", "sex", "slide"),
+    nCores_int = 2
+  )
 )
+# 78 seconds for 2 cores
+system.time(
+  coMethChr22_ls <- CoMethAllRegions(
+    dnam = residChr22_df,
+    betaToM = FALSE, # these are residuals, not beta values
+    method = "spearman",
+    arrayType = "450k",
+    CpGs_ls = closeByChr22_ls,
+    nCores_int = 2
+  )
+)
+# 78 seconds for 2 cores
 
-coMethChr22_ls <- CoMethAllRegions(
-  dnam = residChr22_df,
-  betaToM = FALSE, # these are residuals, not beta values
-  method = "spearman",
-  arrayType = "450k",
-  CpGs_ls = closeByChr22_ls,
-  nCores_int = 6
+system.time(
+  resChr22_df <- lmmTestAllRegions(
+    betas = betasChr22_df,
+    region_ls = coMethChr22_ls,
+    pheno_df = pheno_df,
+    contPheno_char = "stage",
+    covariates_char = c("age.brain", "sex", "slide"),
+    modelType = "randCoef",
+    arrayType = "450k",
+    nCores_int = 2
+    # outLogFile = paste0("lmm_log.txt")
+  )
 )
-  
-resChr22_df <- lmmTestAllRegions(
-  betas = betasChr22_df,
-  region_ls = coMethChr22_ls,
-  pheno_df = pheno_df,
-  contPheno_char = "stage",
-  covariates_char = c("age.brain", "sex", "slide"),
-  modelType = "randCoef",
-  arrayType = "450k",
-  nCores_int = 6,
-  outLogFile = paste0("lmm_log.txt")
-)
+# 49 seconds for 2 cores
 
-# Sys.time() - aAll
-# 3 minutes over 6 cores on Mac
-# 4.4 minutes over 6 cores on Windows
 ```
 
 ## Annotate results
 Finally, we can annotate the results using the `AnnotateResults()` function.
 ```{r annotate_results, results='hide'}
-lmmResAnnotatedChr22_df <- AnnotateResults(
-  lmmRes_df = resChr22_df,
-  arrayType = "450k"
+system.time(
+  lmmResAnnotatedChr22_df <- AnnotateResults(
+    lmmRes_df = resChr22_df,
+    arrayType = "450k"
+  )
 )
+# 54 seconds
 head(lmmResAnnotatedChr22_df)
 ```
 

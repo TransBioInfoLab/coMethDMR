@@ -36,7 +36,7 @@ The latest version can be installed by
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
-BiocManager::install("TransBioInfoLab/MethReg")
+BiocManager::install("TransBioInfoLab/coMethDMR")
 ```
 
 After installation, the `coMethDMR` package can be loaded into R using:
@@ -53,6 +53,7 @@ BiocManager::install("sesameData")
 After installation, the `sesameData` package can be loaded into R using:
 ```{r message=FALSE}
 library(sesameData)
+sesameDataCacheAll()
 ```
 
 ## 1.2 Datasets
@@ -95,16 +96,19 @@ Here, `CpGisland_ls` is a list of 20 items, with each item of the list including
 
 Next, we identify co-methylated regions based on Mvalues.  
 ```{r CoMethAllRegions}
-coMeth_ls <- CoMethAllRegions(
-  dnam = betasChr22_df,
-  betaToM = TRUE, #converts to mvalues
-  method = "pearson",
-  CpGs_ls = CpGisland_ls,
-  arrayType = "450k",
-  returnAllCpGs = FALSE, 
-  output = "CpGs",
-  nCores_int = 1
+system.time(
+  coMeth_ls <- CoMethAllRegions(
+    dnam = betasChr22_df,
+    betaToM = TRUE, #converts to mvalues
+    method = "pearson",
+    CpGs_ls = CpGisland_ls,
+    arrayType = "450k",
+    returnAllCpGs = FALSE, 
+    output = "CpGs",
+    nCores_int = 1
+  )
 )
+# 12 seconds
 
 coMeth_ls
 ```
@@ -131,7 +135,7 @@ WriteCorrPlot <- function(beta_mat){
     betaOrdered_mat, method = "spearman", use = "pairwise.complete.obs"
   )
 
-  corrplot(corr, method="number", number.cex = 1, tl.cex = 0.7)
+  corrplot(corr, method = "number", number.cex = 1, tl.cex = 0.7)
 }
 
 # subsetting beta values to include only co-methylated probes
@@ -148,17 +152,16 @@ Next, we test these co-methylated regions against `stage` using a random coeffic
 Some messages are generated during mixed models fitting, which are saved to the file specified by `outLogFile`. The interpretations of these messages can be found in the FAQs at the end of this document (see Section 3, item (1) and (2)).  
 
 ```{r lmmTestAllRegions_1}
-
 out_df <- lmmTestAllRegions(
-   betas = betasChr22_df,
-   region_ls = coMeth_ls,
-   pheno_df,
-   contPheno_char = "stage",
-   covariates_char = NULL,
-   modelType = "randCoef",
-   arrayType = "450k"
-   # generates a log file in the current directory
-   # outLogFile = paste0("lmmLog_", Sys.Date(), ".txt")
+  betas = betasChr22_df,
+  region_ls = coMeth_ls,
+  pheno_df,
+  contPheno_char = "stage",
+  covariates_char = NULL,
+  modelType = "randCoef",
+  arrayType = "450k"
+  # generates a log file in the current directory
+  # outLogFile = paste0("lmmLog_", Sys.Date(), ".txt")
 )
 
 out_df
@@ -169,10 +172,11 @@ Here `out_df` is a data frame of genomic regions, with corresponding p-values an
 We can annotate these results by adding corresponding genes and probes mapped to the genomic regions. 
 
 ```{r AnnotateResults, message = FALSE}
-
-outAnno_df <- AnnotateResults(
-  lmmRes_df = out_df,
-  arrayType = "450k"
+system.time(
+  outAnno_df <- AnnotateResults(
+    lmmRes_df = out_df,
+    arrayType = "450k"
+  )
 )
 
 outAnno_df
@@ -253,13 +257,15 @@ Cgi_ls <- readRDS(
     mustWork = TRUE
     )
 )
-betasChr22_df <- betasChr22_df[rownames(betasChr22_df) %in% unlist(Cgi_ls)[1:20],]
+betasChr22_df <-
+  betasChr22_df[rownames(betasChr22_df) %in% unlist(Cgi_ls)[1:20], ]
 ```
 
 ```{r GetResiduals}
 resid_df <- GetResiduals(
   dnam = betasChr22_df,
-  betaToM = TRUE, #converts to Mvalues for fitting linear model 
+  # converts to Mvalues for fitting linear model 
+  betaToM = TRUE, 
   pheno_df = pheno_df,
   covariates_char = c("age.brain", "sex", "slide")
 )
@@ -399,10 +405,18 @@ geneList$ARFGAP3
 
 # list probes located closely on this gene
 gene3_200 <- CloseBySingleRegion(
-  CpGs_char = geneList$ARFGAP3, arrayType = "450k", maxGap = 200, minCpGs = 3
+  CpGs_char = geneList$ARFGAP3,
+  arrayType = "450k",
+  maxGap = 200,
+  minCpGs = 3
 )
-CpGsOrdered_df <- lapply(gene3_200, OrderCpGsByLocation, arrayType = "450k", output = "dataframe")
-names(gene3_200) <- lapply(CpGsOrdered_df, NameRegion)
+CpGsOrdered_ls <- lapply(
+  gene3_200,
+  OrderCpGsByLocation,
+  arrayType = "450k",
+  output = "dataframe"
+)
+names(gene3_200) <- lapply(CpGsOrdered_ls, NameRegion)
 
 gene3_200
 
