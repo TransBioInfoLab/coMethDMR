@@ -22,9 +22,11 @@ RegionsToRanges <- function(regionName_char){
 
   end <- sub ("\\d*.-", "", range)
 
-  return (GRanges ( seqnames = as.factor(chr),
-                    ranges = IRanges(as.numeric(start), as.numeric(end))
-                  )
-           )
+  return (
+    GRanges (
+      seqnames = as.factor(chr),
+      ranges = IRanges(as.numeric(start), as.numeric(end))
+    )
+  )
 
 }

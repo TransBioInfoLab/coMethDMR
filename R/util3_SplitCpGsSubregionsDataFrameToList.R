@@ -27,10 +27,12 @@
 #'      arrayType = "450k"
 #'    )
 #'
-SplitCpGDFbyRegion <- function(CpGsSubregions_df,
-                               genome = c("hg19","hg38"),
-                               arrayType = c("450k", "EPIC"),
-                               returnAllCpGs = TRUE){
+SplitCpGDFbyRegion <- function(
+  CpGsSubregions_df,
+  genome = c("hg19","hg38"),
+  arrayType = c("450k", "EPIC"),
+  returnAllCpGs = TRUE
+){
 
   arrayType <- match.arg(arrayType)
   genome <- match.arg(genome)
@@ -61,6 +63,5 @@ SplitCpGDFbyRegion <- function(CpGsSubregions_df,
     subRegion_ls
 
   }
-
 
 }

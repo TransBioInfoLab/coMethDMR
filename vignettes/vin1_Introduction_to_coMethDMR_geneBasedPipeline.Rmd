@@ -40,7 +40,7 @@ BiocManager::install("TransBioInfoLab/coMethDMR")
 ```
 
 After installation, the `coMethDMR` package can be loaded into R using:
-```{r message=FALSE}
+```{r load_comethDMR, message=FALSE}
 library(coMethDMR)
 ```
 
@@ -51,7 +51,7 @@ BiocManager::install("sesameData")
 ```
 
 After installation, the `sesameData` package can be loaded into R using:
-```{r message=FALSE}
+```{r load_sesameData,message=FALSE, eval = FALSE}
 library(sesameData)
 sesameDataCacheAll()
 ```

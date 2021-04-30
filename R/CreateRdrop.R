@@ -25,8 +25,6 @@
 #'
 #'    CreateRdrop(data = betaMatrix_ex1, method = "pearson")
 #'
-#'
-#'
 CreateRdrop <- function(data, method = c("pearson", "spearman")){
   # browser()
 
