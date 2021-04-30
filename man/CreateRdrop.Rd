@@ -34,6 +34,4 @@ An outlier CpG in a genomic region will typically have low correlation with the 
 
    CreateRdrop(data = betaMatrix_ex1, method = "pearson")
 
-
-
 }

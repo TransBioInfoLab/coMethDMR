@@ -41,6 +41,8 @@ Note that this function depends only on CpG locations, and not on
    \code{maxGap}.
 }
 \examples{
+
+\dontrun{
    CpGs_char <- c(
      "cg02505293", "cg03618257", "cg04421269", "cg17885402", "cg19890033",
      "cg20566587", "cg27505880"
@@ -49,5 +51,6 @@ Note that this function depends only on CpG locations, and not on
    cluster_ls <- CloseBySingleRegion(
      CpGs_char, genome = "hg19", arrayType = "450k", maxGap = 100, minCpGs = 3
    )
+}
 
 }
