@@ -75,42 +75,46 @@ closeByGeneAll_ls[1]
 
 Next, for demonstration, we select regions on chromosome 22. 
 ```{r}
-indx <- grep("chr22", names(closeByGeneAll_ls))
+indx <- grep("chr22:", names(closeByGeneAll_ls))
 
 closeByGene_ls <- closeByGeneAll_ls[indx]
 rm(closeByGeneAll_ls)
 length(closeByGene_ls)
 ```
-There are 676 genic regions to be tested for chromosome 22. The first region contains the CpGs
+There are 676 genic regions to be tested for chromosome 22. As an example, this vignette will analyze the first 10 regions, which contain the following CpGs:
 ```{r}
-closeByGene_ls[1]
+closeByGene_ls[1:10]
+```
+
+In order to make these examples as simple as possible, we will remove the CpGs from our data set which are not included in these 10 regions. In practice, you would keep the full data set.
+```{r subset_betasChr22}
+keepCpGs_char <- unique(unlist(closeByGene_ls[1:10]))
+betasChr22small_df <- 
+  betasChr22_df[rownames(betasChr22_df) %in% keepCpGs_char, ]
+dim(betasChr22small_df)
 ```
 
 
 ## Compute residuals
 This step removes uninteresting technical and biological effects using the `GetResiduals` function, so that the resulting co-methylated clusters are only driven by the biological factors we are interested in. 
 ```{r, results='hide'}
-system.time(
-  resid_df <- GetResiduals(
-    dnam = betasChr22_df,
-    # converts to Mvalues for fitting linear model
-    betaToM = TRUE,  
-    pheno_df = pheno_df,
-    # Features in pheno_df used as covariates
-    covariates_char = c("age.brain", "sex", "slide"),
-    nCores_int = 2
-  )
+resid_df <- GetResiduals(
+  dnam = betasChr22small_df,
+  # converts to Mvalues for fitting linear model
+  betaToM = TRUE,  
+  pheno_df = pheno_df,
+  # Features in pheno_df used as covariates
+  covariates_char = c("age.brain", "sex", "slide"),
+  nCores_int = 2
 )
-# 80 seconds for 2 cores; 194.50 for 1
 ```
 
-This step took about 37 seconds when computing in serial, and about 82 seconds when computing over 6 cores.  
 
 ## Finding co-methylated regions
 
 The cluster computing with the **BiocParallel** package involves simply changing the default value of one argument: `nCores_int`. This argument enables you to perform parallel computing when you set the number of cores to an integer value greater than 1. *If you do not know how many cores your machine has, use the `detectCores()` function from the `parallel` package. Note that, if you have many applications open on your computer, you should not use all of the cores available.*
 
-Once we know how many cores we have available, we execute the `CoMethAllRegions()` function using each worker in the cluster, to find co-methylated clusters in the genic regions.  This step took about 99 seconds over 6 cores.
+Once we know how many cores we have available, we execute the `CoMethAllRegions()` function using each worker in the cluster, to find co-methylated clusters in the genic regions. As an example, we only analyze the first 10 CpG regions (`CpGs_ls`).
 ```{r BiocParallel_Gene, message=FALSE, error = TRUE}
 system.time(
   coMeth_ls <- CoMethAllRegions(
@@ -118,13 +122,12 @@ system.time(
     betaToM = FALSE,
     method = "spearman",
     arrayType = "450k",
-    CpGs_ls = closeByGene_ls,
-    nCores_int = 1
+    CpGs_ls = closeByGene_ls[1:10],
+    nCores_int = 2
   )
 )
-# 71 seconds for 2 cores; 103 for 1
-# 40 seconds over 6 cores on Mac
-# 99 seconds over 6 cores on Windows
+# Windows: NA
+# Mac: 23 seconds for 2 cores
 ```
 
 The object `coMeth_ls` is a list, with each item containing the list of CpGs within an identified co-methylated region. 
@@ -133,14 +136,14 @@ The object `coMeth_ls` is a list, with each item containing the list of CpGs wit
 Next we test these co-methylated regions against continuous phenotype `stage`, adjusting for covariates `age` and `sex`, by  executing the `lmmTestAllRegions()` function.  
 ```{r singleRegionType_lmmTest, warning=FALSE, results='hide', message = FALSE, error = TRUE}
 res_df <- lmmTestAllRegions(
-  betas = betasChr22_df,
+  betas = betasChr22small_df,
   region_ls = coMeth_ls,
   pheno_df = pheno_df,
   contPheno_char = "stage",
   covariates_char = c("age.brain", "sex"),
   modelType = "randCoef",
   arrayType = "450k",
-  nCores_int = 1
+  nCores_int = 2
   # outLogFile = "res_lmm_log.txt"
 )
 ```
@@ -177,10 +180,10 @@ closeByInterGene_ls <- readRDS(
 )
 
 # put them together in one list
-closeBy_ls <- c(closeByGene_ls, closeByInterGene_ls)
+closeBy_ls <- c(closeByInterGene_ls, closeByGene_ls)
 ```
 
-For demonstration purposes, we will select regions on Chromosome 22 only.
+For demonstration purposes, we will select regions on Chromosome 22 only, and execute the following example code for the first 10 regions.
 ```{r}
 # select regions on chrom 22 for demonstration
 indx <- grep("chr22", names(closeBy_ls))
@@ -189,59 +192,55 @@ closeByChr22_ls <- closeBy_ls[indx]
 length(closeByChr22_ls)
 ```
 
-Next we remove uninteresting biological and technical effects, execute the `CoMethAllRegions()` function over each worker on the cluster (this completes in roughly 2.6 minutes using 20 cores and 64Gb of RAM), then pass these results to `lmmTestAllRegions()`:
+As above, we will also subset the data to include the CpGs from these first 10 regions, but only to reduce the computational complexity of the code.
+
+```{r subset_betasGenicIntergenic}
+keepCpGs2_char <- unique(unlist(closeByChr22_ls[1:10]))
+betasChr22small2_df <- 
+  betasChr22_df[rownames(betasChr22_df) %in% keepCpGs2_char, ]
+dim(betasChr22small2_df)
+```
+
+Next we remove uninteresting biological and technical effects with `GetResiduals()`, execute the `CoMethAllRegions()` function over each worker on the cluster (for the first 10 regions as an example), then pass these results for the co-methylated regions to `lmmTestAllRegions()`:
 ```{r loop_over_region_types, message=FALSE, results='hide'}
-# aAll <- Sys.time()
-
-system.time(
-  residChr22_df <- GetResiduals(
-    dnam = betasChr22_df,
-    betaToM = TRUE, #converts to Mvalues for fitting linear model 
-    pheno_df = pheno_df,
-    covariates_char = c("age.brain", "sex", "slide"),
-    nCores_int = 2
-  )
+residChr22_df <- GetResiduals(
+  dnam = betasChr22small2_df,
+  betaToM = TRUE, #converts to Mvalues for fitting linear model 
+  pheno_df = pheno_df,
+  covariates_char = c("age.brain", "sex", "slide"),
+  nCores_int = 2
 )
-# 78 seconds for 2 cores
-system.time(
-  coMethChr22_ls <- CoMethAllRegions(
-    dnam = residChr22_df,
-    betaToM = FALSE, # these are residuals, not beta values
-    method = "spearman",
-    arrayType = "450k",
-    CpGs_ls = closeByChr22_ls,
-    nCores_int = 2
-  )
-)
-# 78 seconds for 2 cores
 
-system.time(
-  resChr22_df <- lmmTestAllRegions(
-    betas = betasChr22_df,
-    region_ls = coMethChr22_ls,
-    pheno_df = pheno_df,
-    contPheno_char = "stage",
-    covariates_char = c("age.brain", "sex", "slide"),
-    modelType = "randCoef",
-    arrayType = "450k",
-    nCores_int = 2
-    # outLogFile = paste0("lmm_log.txt")
-  )
+coMethChr22_ls <- CoMethAllRegions(
+  dnam = residChr22_df,
+  betaToM = FALSE, # these are residuals, not beta values
+  method = "spearman",
+  arrayType = "450k",
+  CpGs_ls = closeByChr22_ls[1:10],
+  nCores_int = 2
 )
-# 49 seconds for 2 cores
 
+resChr22_df <- lmmTestAllRegions(
+  betas = betasChr22small2_df,
+  region_ls = coMethChr22_ls,
+  pheno_df = pheno_df,
+  contPheno_char = "stage",
+  covariates_char = c("age.brain", "sex", "slide"),
+  modelType = "randCoef",
+  arrayType = "450k",
+  nCores_int = 2
+  # outLogFile = paste0("lmm_log.txt")
+)
 ```
 
 ## Annotate results
 Finally, we can annotate the results using the `AnnotateResults()` function.
 ```{r annotate_results, results='hide'}
-system.time(
-  lmmResAnnotatedChr22_df <- AnnotateResults(
-    lmmRes_df = resChr22_df,
-    arrayType = "450k"
-  )
+lmmResAnnotatedChr22_df <- AnnotateResults(
+  lmmRes_df = resChr22_df,
+  arrayType = "450k"
 )
-# 54 seconds
+
 head(lmmResAnnotatedChr22_df)
 ```
 
@@ -251,7 +250,7 @@ The analysis for EPIC methylation arrays would be the same as those for 450k arr
 
 So the following scripts replace those in Section 4.  
 
-```{r}
+```{r, eval=FALSE}
 closeByGene_ls <- readRDS(
   system.file(
     "extdata",
