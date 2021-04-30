@@ -28,20 +28,13 @@ chromosome (chr), position (pos)
 Order CpGs by genomic location
 }
 \examples{
-\dontrun{
-   CpGs_char <- c("cg04677227", "cg07146435", "cg11632906", "cg20214853")
-   OrderCpGsByLocation(
-     CpGs_char,
-     genome = "hg19",
-     arrayType = "450k",
-     output = "dataframe"
-   )
 
-   OrderCpGsByLocation(
-     CpGs_char,
-     genome = "hg38",
-     arrayType = "EPIC",
-     output = "vector"
-   )
-}
+ CpGs_char <- c("cg04677227", "cg07146435", "cg11632906", "cg20214853")
+ OrderCpGsByLocation(
+   CpGs_char,
+   genome = "hg19",
+   arrayType = "450k",
+   output = "dataframe"
+ )
+
 }

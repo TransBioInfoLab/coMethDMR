@@ -54,14 +54,4 @@ are used as regression outcomes in these models. The model for each CpG is:
      arrayType = "450k"
    )
 
-\dontrun{
-   # not adjusting for covariates
-   CpGsInfoOneRegion(
-     regionName_char = "chr22:18267969-18268249",
-     betas_df = betasChr22_df,
-     pheno_df, contPheno_char = "stage",
-     covariates_char = NULL
-   )
- }
-
 }

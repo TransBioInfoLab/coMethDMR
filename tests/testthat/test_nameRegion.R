@@ -1,11 +1,11 @@
 # Lizhong Liu
 context("nameRegion")
 
-CpGs_char <- c("cg04677227", "cg07146435", "cg11632906", "cg20214853")
-CpGsOrdered_df <- OrderCpGsByLocation(CpGs_char,
-                                      genome = "hg19",
-                                      arrayType = c("EPIC"),
-                                      output = "dataframe")
+CpGsOrdered_df <- data.frame(
+  chr = c("chr10", "chr10", "chr10", "chr10"),
+  pos = c(100028236L, 100028320L, 100028468L, 100028499L),
+  cpg = c("cg20214853", "cg04677227", "cg11632906", "cg07146435")
+)
 
 test_that("nameRegion returns vector with correct value", {
 
