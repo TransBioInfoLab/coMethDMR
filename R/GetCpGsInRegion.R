@@ -25,7 +25,6 @@ GetCpGsInRegion <- function(
   arrayType = c("450k","EPIC")
 ){
 
-
   arrayType <- match.arg(arrayType)
   genome <- match.arg(genome)
 

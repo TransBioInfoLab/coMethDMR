@@ -54,6 +54,7 @@ are used as regression outcomes in these models. The model for each CpG is:
      arrayType = "450k"
    )
 
+\dontrun{
    # not adjusting for covariates
    CpGsInfoOneRegion(
      regionName_char = "chr22:18267969-18268249",
@@ -61,5 +62,6 @@ are used as regression outcomes in these models. The model for each CpG is:
      pheno_df, contPheno_char = "stage",
      covariates_char = NULL
    )
+ }
 
 }

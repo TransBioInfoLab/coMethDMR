@@ -40,11 +40,14 @@
 #'      covariates_char = c("age.brain", "sex", "slide")
 #'    )
 #'
-GetResiduals <- function(dnam, betaToM = TRUE,
-                         pheno_df,
-                         covariates_char,
-                         nCores_int = 1L,
-                         ...){
+GetResiduals <- function(
+  dnam,
+  betaToM = TRUE,
+  pheno_df,
+  covariates_char,
+  nCores_int = 1L,
+  ...
+){
 
   if (is(dnam, "matrix")){
     dnam_df = as.data.frame(dnam)

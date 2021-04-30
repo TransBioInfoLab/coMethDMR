@@ -36,6 +36,7 @@
 #'      arrayType = "450k"
 #'    )
 #'
+#' \dontrun{
 #'    # not adjusting for covariates
 #'    CpGsInfoOneRegion(
 #'      regionName_char = "chr22:18267969-18268249",
@@ -43,20 +44,27 @@
 #'      pheno_df, contPheno_char = "stage",
 #'      covariates_char = NULL
 #'    )
+#'  }
 #'
-CpGsInfoOneRegion <- function(regionName_char, betas_df, pheno_df,
-                              contPheno_char, covariates_char,
-                              arrayType = c("450k","EPIC")){
+CpGsInfoOneRegion <- function(
+  regionName_char,
+  betas_df,
+  pheno_df,
+  contPheno_char,
+  covariates_char,
+  arrayType = c("450k","EPIC")
+){
 
   arrayType <- match.arg(arrayType)
 
-  switch(arrayType,
-         "450k" = {
-           annotation_df = IlluminaHumanMethylation450kanno.ilmn12.hg19::Other
-         },
-         "EPIC" = {
-           annotation_df = IlluminaHumanMethylationEPICanno.ilm10b2.hg19::Other
-         }
+  switch(
+    arrayType,
+    "450k" = {
+      annotation_df = IlluminaHumanMethylation450kanno.ilmn12.hg19::Other
+    },
+    "EPIC" = {
+      annotation_df = IlluminaHumanMethylationEPICanno.ilm10b2.hg19::Other
+    }
   )
 
 
@@ -88,13 +96,13 @@ CpGsInfoOneRegion <- function(regionName_char, betas_df, pheno_df,
 
     lmF <- function(Mvalue) {
       lmFormula <- as.formula(paste("Mvalue ~", contPheno_char))
-      tmp = coef(summary(lm(lmFormula, data=phenoTest_df)))
+      tmp = coef(summary(lm(lmFormula, data = phenoTest_df)))
       tmp[contPheno_char, c(1, 4)]
     },
 
     lmF <- function(Mvalue) {
       lmFormula <- as.formula(paste("Mvalue ~", contPheno_char, "+", cov))
-      tmp = coef(summary(lm(lmFormula, data=phenoTest_df)))
+      tmp = coef(summary(lm(lmFormula, data = phenoTest_df)))
       tmp[contPheno_char, c(1, 4)]
     }
   )
