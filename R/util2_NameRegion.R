@@ -8,10 +8,18 @@
 #' @export
 #'
 #' @examples
+#'
+#'  CpGsOrdered_df <- data.frame(
+#'   "chr" = c("chr10","chr10"),
+#'   "pos" = c(100028236,100028499)
+#'  )
+#'  NameRegion(CpGsOrdered_df)
+#'
+#' \dontrun{
 #'   CpGs_char <- c("cg04677227", "cg07146435", "cg11632906", "cg20214853")
 #'   CpGsOrdered_df <- OrderCpGsByLocation(CpGs_char, arrayType=c("EPIC"), output = "dataframe")
 #'   NameRegion(CpGsOrdered_df)
-#'
+#'}
 NameRegion <- function(CpGsOrdered_df){
 
   ### Return region name based on genomic location ###

@@ -53,10 +53,12 @@
 #'      arrayType = "450k"
 #'    )
 #'
-AnnotateResults <- function(lmmRes_df,
-                            arrayType = c("450k","EPIC"),
-                            nCores_int = 1L,
-                            ...){
+AnnotateResults <- function(
+    lmmRes_df,
+    arrayType = c("450k","EPIC"),
+    nCores_int = 1L,
+    ...
+){
     ###  Check Inputs  ###
     stopifnot(
         "data.frame" %in% class(lmmRes_df),
