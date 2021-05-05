@@ -79,18 +79,20 @@
 #'    )
 #'
 #'
-CoMethAllRegions <- function(dnam,
-                             betaToM = FALSE,
-                             method = c("pearson", "spearman"),
-                             rDropThresh_num = 0.4,
-                             minCpGs = 3,
-                             arrayType = c("450k","EPIC"),
-                             CpGs_ls,
-                             file = NULL,
-                             returnAllCpGs = FALSE,
-                             output = c("CpGs", "dataframe"),
-                             nCores_int = 1L,
-                             ...){
+CoMethAllRegions <- function(
+  dnam,
+  betaToM = FALSE,
+  method = c("pearson", "spearman"),
+  rDropThresh_num = 0.4,
+  minCpGs = 3,
+  arrayType = c("450k","EPIC"),
+  CpGs_ls,
+  file = NULL,
+  returnAllCpGs = FALSE,
+  output = c("CpGs", "dataframe"),
+  nCores_int = 1L,
+  ...
+){
   # browser()
 
   method <- match.arg(method)
