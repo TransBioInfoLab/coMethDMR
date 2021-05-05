@@ -30,6 +30,7 @@ OrderCpGsByLocation <- function(
 
   arrayType <- match.arg(arrayType)
   genome <- match.arg(genome)
+  output <- match.arg(output)
 
   # Available manifest files are
   # "EPIC.hg19.manifest"  "EPIC.hg38.manifest"
@@ -43,7 +44,14 @@ OrderCpGsByLocation <- function(
 
   CpGlocations.gr <- sesameDataGet(manifest)
 
-  CpGs.gr <- CpGlocations.gr[as.character(CpGs_char)] %>% sort
+  goodCpGs_lgl <- CpGs_char %in% names(CpGlocations.gr)
+  if(all(!goodCpGs_lgl)) {
+    stop(
+      "None of the CpGs are contained in the specified manifest.",
+      call. = FALSE
+    )
+  }
+  CpGs.gr <- CpGlocations.gr[ CpGs_char[goodCpGs_lgl] ] %>% sort
 
   ### Select and return output ###
   if (output == "dataframe") {

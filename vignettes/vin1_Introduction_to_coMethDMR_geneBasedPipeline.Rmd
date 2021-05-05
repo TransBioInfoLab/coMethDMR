@@ -10,11 +10,11 @@ output:
     code_download: false
     toc_depth: 3
 editor_options:
-  chunk_output_type: inline    
+  chunk_output_type: inline
 vignette: >
     %\VignetteIndexEntry{"Introduction to coMethDMR"} 
-    %\VignetteEngine{knitr::rmarkdown}
     %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{knitr::rmarkdown}
 ---
 
 
@@ -389,23 +389,30 @@ data(betasChr22_df)
 ```
 
 ```{r message = FALSE}
+# TO DO 2021-05-02: give an example of how to find the CpGs associated with a
+#   specific gene, then assume the user has done so.
 
-geneList <- readRDS(
-  system.file(
-    "extdata",
-    "450k_CpGstoGene_min3CpGs.RDS",
-    package = 'coMethDMR',
-    mustWork = TRUE
-  )
-)
+# geneList <- readRDS(
+#   system.file(
+#     "extdata",
+#     "450k_CpGstoGene_min3CpGs.RDS",
+#     package = 'coMethDMR',
+#     mustWork = TRUE
+#   )
+# )
+# geneList$ARFGAP3
+
 
 # list probes for this gene
-geneList$ARFGAP3
-
+ARFGAP3_CpGs_char <- c(
+  "cg00079563", "cg01029450", "cg02351223", "cg04527868", "cg09861871",
+  "cg26529516", "cg00539564", "cg05288033", "cg09367092", "cg10648908",
+  "cg14570855", "cg15656623", "cg23778094", "cg27120833"
+)
 
 # list probes located closely on this gene
 gene3_200 <- CloseBySingleRegion(
-  CpGs_char = geneList$ARFGAP3,
+  CpGs_char = ARFGAP3_CpGs_char,
   arrayType = "450k",
   maxGap = 200,
   minCpGs = 3
