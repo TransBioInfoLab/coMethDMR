@@ -244,31 +244,12 @@ lmmResAnnotatedChr22_df <- AnnotateResults(
 head(lmmResAnnotatedChr22_df)
 ```
 
+
+
 # Implementing Parallel Computing for coMethDMR Analysis of EPIC Methylation Arrays Datasets 
 
-The analysis for EPIC methylation arrays would be the same as those for 450k arrays, except by testing genomic regions in files "EPIC_Gene_3_200.RDS" and "EPIC_InterGene_3_200.RDS", instead of "450k_Gene_3_200.RDS" and "450k_InterGene_3_200,RDS". 
+The analysis for EPIC methylation arrays would be the same as those for 450k arrays, except by testing genomic regions in files "EPIC_Gene_3_200.RDS" and "EPIC_InterGene_3_200.RDS", instead of "450k_Gene_3_200.RDS" and "450k_InterGene_3_200,RDS". These data sets are available at <https://github.com/TransBioInfoLab/coMethDMR_data/tree/main/data>.
 
-So the following scripts replace those in Section 4.  
-
-```{r, eval=FALSE}
-closeByGene_ls <- readRDS(
-  system.file(
-    "extdata",
-    "EPIC_Gene_3_200.rds",
-    package = 'coMethDMR',
-    mustWork = TRUE
-  )
-)
-
-closeByInterGene_ls <- readRDS(
-  system.file(
-    "extdata",
-    "EPIC_InterGene_3_200.rds",
-    package = 'coMethDMR',
-    mustWork = TRUE
-  )
-)
-```
 
 
 # Additional Comments on Computational Time and Resources
