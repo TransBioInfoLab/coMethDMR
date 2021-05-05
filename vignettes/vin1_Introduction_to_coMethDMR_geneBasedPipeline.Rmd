@@ -388,21 +388,8 @@ Finally, we demonstrate `coMethDMR` analysis for a particular gene, for example 
 data(betasChr22_df)
 ```
 
+We assume that the user knows the set of probes corresponding to the gene of interest. If this is not the case, we provide two data sets which contain mappings from gene symbols to probe IDs for both 450k ("450k_CpGstoGene_min3CpGs.RDS") and EPIC ("EPIC_CpGstoGene_min3CpGs.RDS") arrays. These two data sets are available at: <https://github.com/TransBioInfoLab/coMethDMR_data/tree/main/data>.
 ```{r message = FALSE}
-# TO DO 2021-05-02: give an example of how to find the CpGs associated with a
-#   specific gene, then assume the user has done so.
-
-# geneList <- readRDS(
-#   system.file(
-#     "extdata",
-#     "450k_CpGstoGene_min3CpGs.RDS",
-#     package = 'coMethDMR',
-#     mustWork = TRUE
-#   )
-# )
-# geneList$ARFGAP3
-
-
 # list probes for this gene
 ARFGAP3_CpGs_char <- c(
   "cg00079563", "cg01029450", "cg02351223", "cg04527868", "cg09861871",
