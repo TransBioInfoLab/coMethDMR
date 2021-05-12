@@ -12,7 +12,7 @@ Sample, age of brain sample (age.brain)
 GEO accession: GSE59685
 }
 \usage{
-pheno_df
+data("pheno_df")
 }
 \description{
 Subset of phenotype information for Alzheimer's methylation dataset.

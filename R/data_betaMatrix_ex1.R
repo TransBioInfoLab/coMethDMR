@@ -5,6 +5,8 @@
 #'
 #' @format A data frame containing beta values for 4 CpGs in one CpG islands for 110 subjects.
 #' Each column is a CpG, each row is a sample.
+#' 
+#' @usage data("betaMatrix_ex1")
 #'
 #' @source GEO accession: GSE59685
 "betaMatrix_ex1"

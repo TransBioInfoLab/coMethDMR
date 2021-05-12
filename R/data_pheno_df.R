@@ -4,6 +4,8 @@
 #'
 #' @format A data frame containing variables for Braak stage (stage), subject.id, Batch (slide), Sex,
 #' Sample, age of brain sample (age.brain)
+#' 
+#' @usage data("pheno_df")
 #'
 #' @source GEO accession: GSE59685
 "pheno_df"

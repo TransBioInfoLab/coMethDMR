@@ -12,7 +12,7 @@ Each column is a CpG, each row is a sample.
 GEO accession: GSE59685
 }
 \usage{
-betaMatrix_ex3
+data("betaMatrix_ex3")
 }
 \description{
 Subset of an Alzheimer's Disease methylation data set,

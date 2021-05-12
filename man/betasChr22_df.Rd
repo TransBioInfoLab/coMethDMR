@@ -12,7 +12,7 @@ A data frame containing beta values for 8552 CpGs in
 GEO accession: GSE59685
 }
 \usage{
-betasChr22_df
+data("betasChr22_df")
 }
 \description{
 Subset of an Alzheimer's methylation dataset, with beta values for CpGs.

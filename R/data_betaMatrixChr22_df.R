@@ -5,6 +5,7 @@
 #' @format A data frame containing beta values for 8552 CpGs in
 #'   Chr22 for a subset of 20 subjects.
 #'
+#' @usage data("betasChr22_df")
 #'
 #' @source GEO accession: GSE59685
 "betasChr22_df"
