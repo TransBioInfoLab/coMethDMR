@@ -106,7 +106,7 @@ lmmTest <- function(betaOne_df, pheno_df, contPheno_char, covariates_char,
   if(!is.null(outLogFile)){
     cat(paste0("Analyzing region ", regionName, ". \n"))
   } else {
-    message(paste0("Analyzing region ", regionName, ". \n"))
+    message("Analyzing region ", regionName, ". \n")
   }
 
   f <- tryCatch({

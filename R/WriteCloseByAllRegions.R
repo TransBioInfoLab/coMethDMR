@@ -55,9 +55,10 @@ WriteCloseByAllRegions <- function(
   if(maxGap == 200 & minCpGs == 3){
 
     warning(
-      paste("A file of close by CpGs for maxGap = 200 and minCpGs = 3
-            for genic and intergenic regions already exist at /inst/extdata/")
+      "A file of close by CpGs for maxGap = 200 and minCpGs = 3 for genic and
+      intergenic regions already exist at /inst/extdata/"
     )
+    
 
   } else {
 
@@ -113,9 +114,7 @@ WriteCloseByAllRegions <- function(
 
 
     ### Select and return output ###
-    message(
-      paste("Writing to file", fileName)
-    )
+    message("Writing to file ", fileName)
 
     saveRDS(closeByRegionsOrdered_ls, fileName)
 
