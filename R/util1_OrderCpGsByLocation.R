@@ -9,7 +9,7 @@
 #' chromosome (chr), position (pos)
 #' @export
 #'
-#' @importFrom  sesameData sesameDataGet
+#' @importFrom  sesameData sesameDataGet sesameDataCache
 #'
 #' @examples
 #' 
@@ -41,7 +41,12 @@ OrderCpGsByLocation <- function(
     genome, "manifest",
     sep = "."
   )
-
+  
+  if (arrayType == "450k"){
+    cache <- suppressMessages({sesameDataCache("HM450")})
+  } else {
+    cache <- suppressMessages({sesameDataCache("EPIC")})
+  }
   CpGlocations.gr <- sesameDataGet(manifest)
 
   goodCpGs_lgl <- CpGs_char %in% names(CpGlocations.gr)
