@@ -1,0 +1,81 @@
+# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+
+language: r
+r:
+  - bioc-release
+sudo: true
+cache: packages
+bioc_required: true
+bioc_use_devel: true
+warnings_are_errors: false
+
+r_check_args: '--ignore-vignettes --no-examples'
+
+os:
+  - linux
+  - osx
+osx_image: xcode9
+
+addons:
+  apt:
+    packages:
+      - libgdal-dev
+      - libgdal1-dev
+      - libproj-dev
+      - libudunits2-dev
+  brew_packages:
+      - udunits
+
+before_install:
+  - if [ ${TRAVIS_OS_NAME} == linux ]; then sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable --yes; fi
+  - if [ ${TRAVIS_OS_NAME} == linux ]; then sudo apt-get --yes --force-yes update -qq; fi
+  - if [ ${TRAVIS_OS_NAME} == linux ]; then sudo apt-get install --yes libudunits2-dev libproj-dev libgeos-dev libgdal-dev; fi
+
+r_binary_packages:
+  - withr
+  - knitr
+  - crayon
+  - roxygen2
+  - testthat
+  - bitops
+  - DBI
+  - getopt
+  - rjson
+  - tidyr
+  - dplyr
+  - rlang
+  - stats
+  - corrplot
+  - utils
+  - rmarkdown
+  - knitr
+  
+bioc_packages:
+  - BiocParallel
+  - BiocStyle
+  - bumphunter
+  - GenomicRanges
+  - IRanges
+  - lmerTest
+  - methods
+  - sesameData
+  - GenoGAM
+  - IlluminaHumanMethylation450kanno.ilmn12.hg19
+  - IlluminaHumanMethylationEPICanno.ilm10b2.hg19
+  
+script:
+  - |
+    travis_wait R CMD build .
+    travis_wait 60 R CMD check coMethDMR*tar.gz
+
+after_script:
+  - ls -lah
+  - FILE=$(ls -1t *.tar.gz | head -n 1)
+  - Rscript -e "library(BiocCheck); BiocCheck(\"${FILE}\")
+
+r_build_args:  --no-resave-data
+
+notifications:
+    email: true
+    on_success: never # default: change
+    on_failure: always # default: always  
