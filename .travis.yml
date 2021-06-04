@@ -44,9 +44,7 @@ r_binary_packages:
   - tidyr
   - dplyr
   - rlang
-  - stats
   - corrplot
-  - utils
   - rmarkdown
   - knitr
   
