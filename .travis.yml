@@ -6,7 +6,7 @@ r:
 sudo: true
 cache: packages
 bioc_required: true
-bioc_use_devel: true
+bioc_use_devel: false
 warnings_are_errors: false
 
 r_check_args: '--ignore-vignettes --no-examples'
@@ -14,22 +14,22 @@ r_check_args: '--ignore-vignettes --no-examples'
 os:
   - linux
   - osx
-osx_image: xcode9
+osx_image: xcode12.5
 
-addons:
-  apt:
-    packages:
-      - libgdal-dev
-      - libgdal1-dev
-      - libproj-dev
-      - libudunits2-dev
-  brew_packages:
-      - udunits
+#addons:
+#  apt:
+#    packages:
+#      - libgdal-dev
+#      - libgdal1-dev
+#      - libproj-dev
+#      - libudunits2-dev
+#  brew_packages:
+#      - udunits
 
-before_install:
-  - if [ ${TRAVIS_OS_NAME} == linux ]; then sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable --yes; fi
-  - if [ ${TRAVIS_OS_NAME} == linux ]; then sudo apt-get --yes --force-yes update -qq; fi
-  - if [ ${TRAVIS_OS_NAME} == linux ]; then sudo apt-get install --yes libudunits2-dev libproj-dev libgeos-dev libgdal-dev; fi
+#before_install:
+#  - if [ ${TRAVIS_OS_NAME} == linux ]; then sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable --yes; fi
+#  - if [ ${TRAVIS_OS_NAME} == linux ]; then sudo apt-get --yes --force-yes update -qq; fi
+#  - if [ ${TRAVIS_OS_NAME} == linux ]; then sudo apt-get install --yes libudunits2-dev libproj-dev libgeos-dev libgdal-dev; fi
 
 r_binary_packages:
   - withr
@@ -47,6 +47,7 @@ r_binary_packages:
   - corrplot
   - rmarkdown
   - knitr
+  - lmerTest
   
 bioc_packages:
   - BiocParallel
@@ -54,8 +55,6 @@ bioc_packages:
   - bumphunter
   - GenomicRanges
   - IRanges
-  - lmerTest
-  - methods
   - sesameData
   - GenoGAM
   - IlluminaHumanMethylation450kanno.ilmn12.hg19
