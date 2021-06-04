@@ -14,7 +14,7 @@ r_check_args: '--ignore-vignettes --no-examples'
 os:
   - linux
   - osx
-osx_image: xcode12.5
+osx_image: xcode12.4
 
 #addons:
 #  apt:
