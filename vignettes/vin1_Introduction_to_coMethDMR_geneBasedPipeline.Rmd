@@ -26,9 +26,9 @@ knitr::opts_chunk$set(echo = TRUE, error = TRUE)
 methylated in Illumina array datasets. Instead of testing all CpGs within a genomic region, `coMethDMR` carries out an additional step that selects co-methylated sub-regions first without using any outcome information. Next, `coMethDMR` tests association between methylation within the sub-region and continuous phenotype using a random coefficient mixed effects model, which models both variations between CpG sites within the region and differential methylation simultaneously. 
 
 
-# 1. Quick start
+# Quick start
 
-## 1.1 Installation 
+## Installation 
 
 The latest version can be installed by
 
@@ -36,7 +36,7 @@ The latest version can be installed by
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
-BiocManager::install("TransBioInfoLab/coMethDMR")
+BiocManager::install("coMethDMR")
 ```
 
 After installation, the `coMethDMR` package can be loaded into R using:
@@ -51,12 +51,12 @@ BiocManager::install("sesameData")
 ```
 
 After installation, the `sesameData` package can be loaded into R using:
-```{r load_sesameData,message=FALSE, eval = FALSE}
+```{r load_sesameData,message=FALSE}
 library(sesameData)
 sesameDataCacheAll()
 ```
 
-## 1.2 Datasets
+## Datasets
 
 The input of `coMethDMR` are methylation beta values. We assume quality control and normalization of the methylation dataset have been performed, by R packages such as `minfi` or `RnBeads`. For illustration, we use a subset of prefrontal cortex methylation data (GEO GSE59685) from a recent Alzheimer's disease epigenome-wide association study which was described in Lunnon et al. (2014). This example dataset contains beta values for 8552 CpGs on chromosome 22 for a random selection of 20 subjects. 
 
@@ -74,7 +74,7 @@ head(pheno_df)
 ```
 
 
-## 1.3 A quick work through of coMethDMR 
+## A quick work through of coMethDMR 
 For illustration, suppose we are interested in identifying co-methylated genomic regions associated with AD stages (`stage` treated as a linear variable). Here we demonstrate analysis of genomic regions mapped to CpG islands on chromosome 22. However the workflow can be similarly conducted for other types of genomic regions. See details in Section 2.1 below for gene based pipeline that tests genic and intergenic regions. 
 
 There are several steps: (1) obtain CpGs located closely (see details in Section 2.1 below) in genomic regions mapped to CpG islands, (2) identify co-methylated regions, and (3) test co-methylated regions against the outcome variable AD stage. 
@@ -214,9 +214,9 @@ CpGsInfoOneRegion(
 )
 ```
 
-# 2. Details of `coMethDMR` workflow
+# Details of `coMethDMR` workflow
 
-## 2.1 Genomic regions tested in gene based pipeline
+## Genomic regions tested in gene based pipeline
 
 Genomic regions on the Illumina arrays can be defined based on their relations to genes or CpG Islands. To reduce redundancy in the tested genomic regions, we recommend first testing genic and intergenic regions, then add annotations to each genomic region for their relation to CpG islands. 
 
@@ -241,7 +241,7 @@ Here `gene_ls` is a list, with each item containing a character vector of CpGs I
 
 Vignette # 2 illustrates how to leverage parallel computing via `BiocParallel` R package to make gene-based analysis fast. 
 
-## 2.2 When there are co-variate variables in dataset to consider
+## When there are co-variate variables in dataset to consider
 
 Before identifying co-methylated clusters, we recommend removing uninteresting technical and biological effects, so that the resulting co-methylated clusters are only driven by the biological factors we are interested in. This can be accomplished using the `GetResiduals` function. 
 
@@ -271,7 +271,7 @@ resid_df <- GetResiduals(
 )
 ```
 
-## 2.2 Algorithm for identifying co-methylated regions
+## Algorithm for identifying co-methylated regions
 
 Within each genomic region, coMethDMR identifies contiguous and co-methylated CpGs sub-regions without using any outcome information. To select these co-methylated sub-regions, we use the `rdrop` statistic, which is the correlation between each CpG with the sum of methylation levels in all other CpGs. The default is `rDropThresh_num = 0.4`. We recommend this setting based on our simulation study. Note that higher `rDropThresh_num` values lead to fewer co-methylated regions.
 
@@ -337,7 +337,7 @@ coMethData_df
 
 `coMethData_df` provides the details on how the co-methylated region was obtained: Here `keep = 1` if `rDropThresh_num > 0.4` (i.e. a co-methylated CpG), and `keep_contigous` indicates if the probe is in a contiguous co-methylated region. Note that only the last 3 CpGs constitutes the co-methylated cluster.    
 
-## 2.3 Models for testing genomic regions against a continuous phenotype 
+##  Models for testing genomic regions against a continuous phenotype 
 
 To test association between a continuous phenotype and methylation values in a contiguous co-methylated region, two mixed models have been implemented in the function `lmmTestAllRegions`: a random coefficient mixed model (`modelType = "randCoef"`) and a simple linear mixed model (`modelType = "simple"`). 
 
@@ -380,7 +380,7 @@ lmmTestAllRegions(
 )
 ```
 
-## 2.4 Analyzing a specific gene
+##  Analyzing a specific gene
 
 Finally, we demonstrate `coMethDMR` analysis for a particular gene, for example the `ARFGAP3` gene. 
 
@@ -447,7 +447,7 @@ AnnotateResults(lmmRes_df = results, arrayType = "450k")
 ```
 
 
-# 3. Frequently Asked Questions
+#  Frequently Asked Questions
 
 (1) What happens when mixed model fails to coverge (i.e. the warning "Model failed to converge with..." is resulted for a particular genomic region)?
 - In this case, the p-value for mixed model is set to 1. In our experiences with methylation datasets, genomic regions with strong signals typically converge. Convergence issues typically occurs when the amount of noise in data is high. 
@@ -457,9 +457,14 @@ AnnotateResults(lmmRes_df = results, arrayType = "450k")
 
 
 
-# 4. Reference
+#  Reference
 
 Lunnon K, Smith R, Hannon E, De Jager PL, Srivastava G, Volta M, Troakes C, Al-Sarraj S, Burrage J, Macdonald R, et al (2014) Methylomic profiling implicates cortical deregulation of ANK1 in Alzheimer's disease. Nat Neurosci 17:1164-1170.
 
 
+
+# Session Information
+```{r}
+utils::sessionInfo()
+```
 

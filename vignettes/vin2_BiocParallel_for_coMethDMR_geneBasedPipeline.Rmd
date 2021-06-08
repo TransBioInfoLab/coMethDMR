@@ -253,4 +253,12 @@ The analysis for EPIC methylation arrays would be the same as those for 450k arr
 
 
 # Additional Comments on Computational Time and Resources
-In this vignette, we have analyzed a small subset of a real EWAS dataset (i.e. only chromosome 22 data on 20 subjects). To give users a more realistic estimate of time for analyzing real EWAS datasets, we also measured time used for analyzing the entire Lunnon et al. (2014) dataset with 110 samples on all chromosomes. These computation times measured on a Dell Precision 5810 with 64Gb of RAM, an Intel Xeon E5-2640 CPU at 2.40Ghz, and using up to 20 cores. More specifically, in Section 4, the entire **coMethDMR** workflow for took 103 minutes with 6 cores and used a maximum of 24Gb of RAM (for the `CoMethAllRegions()` function). We’re currently working improving the speed and reducing the size of **coMethDMR**, so please check back soon for updates.  
+In this vignette, we have analyzed a small subset of a real EWAS dataset (i.e. only chromosome 22 data on 20 subjects). To give users a more realistic estimate of time for analyzing real EWAS datasets, we also measured time used for analyzing the entire Lunnon et al. (2014) dataset with 110 samples on all chromosomes. These computation times measured on a Dell Precision 5810 with 64Gb of RAM, an Intel Xeon E5-2640 CPU at 2.40Ghz, and using up to 20 cores. More specifically, in Section 4, the entire **coMethDMR** workflow for took 103 minutes with 6 cores and used a maximum of 24Gb of RAM (for the `CoMethAllRegions()` function). We’re currently working improving the speed and reducing the size of **coMethDMR**, so please check back soon for updates. 
+
+
+
+# Session Information
+```{r}
+utils::sessionInfo()
+```
+

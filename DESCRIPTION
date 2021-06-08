@@ -18,7 +18,7 @@ Description: coMethDMR identifies genomic regions associated with continuous
   using a random coefficient mixed effects model, which models both variations
   between CpG sites within the region and differential methylation simultaneously. 
 Depends:
-  R (>= 4.0.0)
+  R (>= 4.1)
 License: GPL-3
 Encoding: UTF-8
 LazyData: false
@@ -52,3 +52,4 @@ biocViews:
     DifferentialMethylation, 
     GenomeWideAssociation
 VignetteBuilder: knitr
+BugReports: https://github.com/TransBioInfoLab/coMethDMR/issues
