@@ -137,7 +137,7 @@ lmmTestAllRegions <- function(
   writeLog_logi <- !is.null(outLogFile)
   if(writeLog_logi){
 
-    message("messages for mixed model fittings are in file ", outLogFile)
+    message("Diagnostics for mixed model fittings are in file ", outLogFile)
     # for why we need the direct file creation, two sinks opened, and two sinks
     #   closed, see the following two Stack Overflow questions:
     # 48173020/r-function-sink-isnt-redirecting-messages-or-warnings-to-a-file

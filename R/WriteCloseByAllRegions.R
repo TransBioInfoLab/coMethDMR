@@ -69,8 +69,11 @@ WriteCloseByAllRegions <- function(
     # "EPIC.hg19.manifest"  "EPIC.hg38.manifest"
     # "HM27.hg19.manifest"  "HM27.hg38.manifest"
     # "HM450.hg19.manifest" "HM450.hg38.manifest"
-    manifest <- paste(ifelse(arrayType == "450k","HM450","EPIC"),
-                      genome, "manifest", sep = ".")
+    manifest <- paste(
+      ifelse(arrayType == "450k","HM450","EPIC"),
+      genome, "manifest",
+      sep = "."
+    )
     CpGlocations.gr <- sesameDataGet(manifest)
 
     ### Convert input from GRanges to list of vectors of CpGs ###

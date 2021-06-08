@@ -44,17 +44,7 @@ After installation, the `coMethDMR` package can be loaded into R using:
 library(coMethDMR)
 ```
 
-If you are running the `coMethDMR` package for the first time, you will  also need to install the `sesameData` package. 
-This will just take a few minutes and it will allow you to download complementary data necessary to run `coMethDMR` package otherwise you won't be able to go forward. 
-```{r eval=FALSE}
-BiocManager::install("sesameData")
-```
-
-After installation, the `sesameData` package can be loaded into R using:
-```{r load_sesameData,message=FALSE}
-library(sesameData)
-sesameDataCacheAll()
-```
+If you are running the `coMethDMR` package for the first time, you will also need to download supplemental data sets from the `sesameData` package. This happens automatically for the 450k and EPIC arrays when you load `coMethDMR` for the first time.
 
 ## Datasets
 
