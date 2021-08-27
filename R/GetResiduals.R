@@ -48,6 +48,8 @@ GetResiduals <- function(
   nCores_int = 1L,
   ...
 ){
+  
+  # browser()
 
   if (is(dnam, "matrix")){
     dnam_df = as.data.frame(dnam)
@@ -75,7 +77,7 @@ GetResiduals <- function(
   ## Check if samples in value_df and pheno_df are identical
   idt <- identical(colnames(value_df), pheno_df$Sample)
 
-  if (idt){
+  if (idt) {
 
     value_df <- value_df
     pheno_df <- pheno_df
@@ -112,7 +114,8 @@ GetResiduals <- function(
 
       residuals(fitE)
 
-    },  BPPARAM = cluster
+    },
+    BPPARAM = cluster
   )
   ### Take residuals
   resid_df <- do.call(rbind, resid_ls)

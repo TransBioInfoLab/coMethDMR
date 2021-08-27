@@ -19,7 +19,7 @@ vignette: >
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 `coMethDMR` is an R package that identifies genomic regions that are both co-methylated and differentially
@@ -89,7 +89,7 @@ Next, we identify co-methylated regions based on Mvalues.
 system.time(
   coMeth_ls <- CoMethAllRegions(
     dnam = betasChr22_df,
-    betaToM = TRUE, #converts to mvalues
+    betaToM = TRUE, # converts beta to m-values
     method = "pearson",
     CpGs_ls = CpGisland_ls,
     arrayType = "450k",
@@ -98,7 +98,7 @@ system.time(
     nCores_int = 1
   )
 )
-# 12 seconds
+# ~15 seconds
 
 coMeth_ls
 ```
@@ -168,9 +168,9 @@ system.time(
     arrayType = "450k"
   )
 )
+# ~12 seconds
 
 outAnno_df
-
 ```
 
 To further examine the significant regions, we can also extract individual CpG p-values within these significant regions. For example, for the most significant region `chr22:18268062-18268249`, 
@@ -193,7 +193,6 @@ These CpGs mapped to intergenic regions, so there are no gene names associated w
 library("GenoGAM")
 ```
 
-
 ```{r CpGsInfoOneRegion_2}
 CpGsInfoOneRegion(
   regionName_char = "chr22:19709548-19709755",
@@ -203,6 +202,8 @@ CpGsInfoOneRegion(
   arrayType = "450k"
 )
 ```
+
+
 
 # Details of `coMethDMR` workflow
 
@@ -327,6 +328,7 @@ coMethData_df
 
 `coMethData_df` provides the details on how the co-methylated region was obtained: Here `keep = 1` if `rDropThresh_num > 0.4` (i.e. a co-methylated CpG), and `keep_contigous` indicates if the probe is in a contiguous co-methylated region. Note that only the last 3 CpGs constitutes the co-methylated cluster.    
 
+
 ##  Models for testing genomic regions against a continuous phenotype 
 
 To test association between a continuous phenotype and methylation values in a contiguous co-methylated region, two mixed models have been implemented in the function `lmmTestAllRegions`: a random coefficient mixed model (`modelType = "randCoef"`) and a simple linear mixed model (`modelType = "simple"`). 
@@ -356,19 +358,7 @@ lmmTestAllRegions(
 )
 ```
 
-If we don't want to adjust for any covariate effect, we can set `covariates_char` to `NULL`: 
-
-```{r lmmTestAllRegions_3, message = FALSE}
-lmmTestAllRegions(
-  betas = betasChr22_df,
-  region_ls = coMeth_ls[1],
-  pheno_df,
-  contPheno_char = "stage",
-  covariates_char = NULL,
-  modelType = "randCoef",
-  arrayType = "450k"
-)
-```
+If we don't want to adjust for any covariate effect, we can set `covariates_char` to `NULL`. 
 
 ##  Analyzing a specific gene
 
@@ -402,9 +392,12 @@ CpGsOrdered_ls <- lapply(
 )
 names(gene3_200) <- lapply(CpGsOrdered_ls, NameRegion)
 
+# List of regions
 gene3_200
+```
 
-
+Now that we have a list of regions, we can find the co-methylated regions within the gene and test their statistical significance:
+```{r find_and_test_regions}
 # co-methlyated region within the gene
 coMeth_ls <- CoMethAllRegions(
   dnam = betasChr22_df,
@@ -430,11 +423,13 @@ results <- lmmTestAllRegions(
   # generates a log file in the current directory
   # outLogFile = paste0("lmmLog_", Sys.Date(), ".txt")
 )
-
-# add annotation
-AnnotateResults(lmmRes_df = results, arrayType = "450k")
-
 ```
+
+Before we inspect the results, we will annotate them:
+```{r}
+AnnotateResults(lmmRes_df = results, arrayType = "450k")
+```
+
 
 
 #  Frequently Asked Questions

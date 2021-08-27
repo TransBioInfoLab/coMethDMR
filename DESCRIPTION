@@ -1,7 +1,7 @@
 Package: coMethDMR
 Title: Accurate identification of co-methylated and differentially methylated
   regions in epigenome-wide association studies
-Version: 0.99.6
+Version: 0.99.7
 Authors@R: c(
   person("Fernanda", "Veitzman", email = "fveit001@fiu.edu", role = c("cre")),
   person("Lissette", "Gomez", email = "lxg255@miami.edu", role = c("aut")),
@@ -18,7 +18,8 @@ Description: coMethDMR identifies genomic regions associated with continuous
   using a random coefficient mixed effects model, which models both variations
   between CpG sites within the region and differential methylation simultaneously. 
 Depends:
-  R (>= 4.1)
+  R (>= 4.1),
+  sesameData
 License: GPL-3
 Encoding: UTF-8
 LazyData: false
@@ -33,7 +34,6 @@ Imports:
   lmerTest,
   methods,
   rlang,
-  sesameData,
   stats,
   tidyr,
   utils
@@ -54,3 +54,4 @@ biocViews:
     GenomeWideAssociation
 VignetteBuilder: knitr
 BugReports: https://github.com/TransBioInfoLab/coMethDMR/issues
+URL: https://github.com/TransBioInfoLab/coMethDMR
