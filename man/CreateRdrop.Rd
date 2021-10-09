@@ -4,12 +4,17 @@
 \alias{CreateRdrop}
 \title{Computes leave-one-out correlations (rDrop) for each CpG}
 \usage{
-CreateRdrop(data, method = c("pearson", "spearman"))
+CreateRdrop(data, method = c("pearson", "spearman"), use = "complete.obs")
 }
 \arguments{
 \item{data}{a dataframe with rownames = sample IDs, column names = CpG IDs.}
 
-\item{method}{method for computing correlation, can be "pearson" or "spearman"}
+\item{method}{method for computing correlation, can be "pearson" or
+"spearman", and is passed to the \code{\link[stats]{cor}} function.}
+
+\item{use}{method for handling missing values when calculating the
+correlation. Defaults to \code{"complete.obs"} because the option
+\code{"pairwise.complete.obs"} only works for Pearson correlation.}
 }
 \value{
 A data frame with the following columns:
@@ -24,10 +29,11 @@ A data frame with the following columns:
 Computes leave-one-out correlations (rDrop) for each CpG
 }
 \details{
-An outlier CpG in a genomic region will typically have low correlation with the rest of
- the CpGs in a genomic region. On the other hand, in a cluster of co-methylated CpGs, we expect
- each CpG to have high correlation with the rest of the CpGs. The \code{r.drop} statistic is used
- to identify these co-methylated CpGs here.
+An outlier CpG in a genomic region will typically have low
+  correlation with the rest of the CpGs in a genomic region. On the other
+  hand, in a cluster of co-methylated CpGs, we expect each CpG to have high
+  correlation with the rest of the CpGs. The \code{r.drop} statistic is used
+  to identify these co-methylated CpGs here.
 }
 \examples{
    data(betaMatrix_ex1)

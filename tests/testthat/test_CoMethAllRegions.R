@@ -3,10 +3,10 @@ context("CoMethAllRegions")
 
 data(betasChr22_df)
 CpGsChr22_ls <- readRDS(
-  system.file ("extdata",
-               "CpGislandsChr22_ex.RDS",
-               package = 'coMethDMR',
-               mustWork = TRUE
+  system.file(
+    "extdata", "CpGislandsChr22_ex.rds",
+    package = 'coMethDMR',
+    mustWork = TRUE
   )
 )
 

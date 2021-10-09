@@ -88,7 +88,7 @@ examples of these files are in /inst/extdata/ folder of the package.
    CpGisland_ls <- readRDS(
      system.file(
        "extdata",
-       "CpGislandsChr22_ex.RDS",
+       "CpGislandsChr22_ex.rds",
        package = 'coMethDMR',
        mustWork = TRUE
      )

@@ -6,7 +6,7 @@ data(pheno_df)
 
 # CpGisland_ls <- readRDS(
 #   system.file(
-#     "extdata", "CpGislandsChr22_ex.RDS",
+#     "extdata", "CpGislandsChr22_ex.rds",
 #     package = 'coMethDMR',
 #     mustWork = TRUE
 #   )

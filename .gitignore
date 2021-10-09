@@ -5,3 +5,5 @@
 .Ruserdata
 .Rbuildignore
 .DS_Store
+/doc/
+/Meta/

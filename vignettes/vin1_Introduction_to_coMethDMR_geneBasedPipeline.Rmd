@@ -75,7 +75,7 @@ For the first step, we use the following commands:
 CpGisland_ls <- readRDS(
   system.file(
     "extdata",
-    "CpGislandsChr22_ex.RDS",
+    "CpGislandsChr22_ex.rds",
     package = 'coMethDMR',
     mustWork = TRUE
     )
@@ -243,7 +243,7 @@ For example, the following script computes residuals from linear model
 Cgi_ls <- readRDS(
   system.file(
     "extdata",
-    "CpGislandsChr22_ex.RDS",
+    "CpGislandsChr22_ex.rds",
     package = 'coMethDMR',
     mustWork = TRUE
     )
@@ -272,7 +272,7 @@ Again, for illustration, we use CpG islands. For example, if we are interested i
 Cgi_ls <- readRDS(
   system.file(
     "extdata",
-    "CpGislandsChr22_ex.RDS",
+    "CpGislandsChr22_ex.rds",
     package = 'coMethDMR',
     mustWork = TRUE
     )

@@ -62,7 +62,7 @@
 #'    CpGisland_ls <- readRDS(
 #'      system.file(
 #'        "extdata",
-#'        "CpGislandsChr22_ex.RDS",
+#'        "CpGislandsChr22_ex.rds",
 #'        package = 'coMethDMR',
 #'        mustWork = TRUE
 #'      )
