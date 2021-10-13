@@ -83,6 +83,7 @@ GetResiduals <- function(
     pheno_df <- pheno_df
 
   } else {
+    
     message("Phenotype data is not in the same order as methylation data. We will use column Sample in phenotype data to put these two files in the same order.")
     intersectSample <- intersect(colnames(value_df), pheno_df$Sample)
 
@@ -117,11 +118,11 @@ GetResiduals <- function(
     },
     BPPARAM = cluster
   )
+  
   ### Take residuals
-  resid_df <- do.call(rbind, resid_ls)
+  resid_mat <- do.call(rbind, resid_ls)
+  row.names(resid_mat) <- row.names(value_df)
 
-  row.names(resid_df) <- row.names(value_df)
-
-  resid_df
+  resid_mat
 
 }

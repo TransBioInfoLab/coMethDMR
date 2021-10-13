@@ -44,7 +44,7 @@ After installation, the `coMethDMR` package can be loaded into R using:
 library(coMethDMR)
 ```
 
-If you are running the `coMethDMR` package for the first time, you will also need to download supplemental data sets from the `sesameData` package. This happens automatically for the 450k and EPIC arrays when you load `coMethDMR` for the first time.
+If you are running the `coMethDMR` package for the first time, you will also need to download supplemental data sets from the `sesameData` package. This happens automatically for the 450k and EPIC arrays when you load `coMethDMR` for the first time. If you experience errors in this process, you may have your cache in an older default location. Please follow these steps to update where these genomic data are stored: <https://bioconductor.org/packages/devel/bioc/vignettes/ExperimentHub/inst/doc/ExperimentHub.html#default-caching-location-update>.
 
 ## Datasets
 
@@ -253,7 +253,7 @@ betasChr22_df <-
 ```
 
 ```{r GetResiduals}
-resid_df <- GetResiduals(
+resid_mat <- GetResiduals(
   dnam = betasChr22_df,
   # converts to Mvalues for fitting linear model 
   betaToM = TRUE, 
@@ -279,7 +279,7 @@ Cgi_ls <- readRDS(
 )
 
 coMeth_ls <- CoMethAllRegions(
-  dnam = resid_df,
+  dnam = resid_mat,
   betaToM = FALSE,
   method = "pearson",
   CpGs_ls = Cgi_ls[1],
@@ -292,13 +292,12 @@ coMeth_ls
 
 ```
 
-The results indicate there is no co-methylated sub-region within the first genomic region. 
+The results (`NULL`) indicate there is no co-methylated sub-region within the first genomic region. 
 
-Next we look at a region (5th region in `Cgi_ls`) where there is a co-methylated sub-region: 
-
+What about the other 19 regions? Next we look at a region (5th region in `Cgi_ls`) where there is a co-methylated sub-region: 
 ```{r CoMethAllRegions_3}
 coMeth_ls <- CoMethAllRegions(
-  dnam = resid_df,
+  dnam = resid_mat,
   betaToM = FALSE,
   CpGs_ls = Cgi_ls[5],
   arrayType = "450k",
@@ -315,7 +314,7 @@ If we want to see the detailed output of the coMethDMR algorithm, that is, how t
 
 ```{r CoMethAllRegions_4}
 coMethData_df <- CoMethAllRegions(
-  dnam = resid_df,
+  dnam = resid_mat,
   betaToM = FALSE,
   CpGs_ls = Cgi_ls[5],
   arrayType = "450k",

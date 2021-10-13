@@ -70,6 +70,7 @@ CoMethSingleRegion <- function(CpGs_char,
                                genome = c("hg19","hg38"),
                                arrayType = c("450k","EPIC"),
                                returnAllCpGs = FALSE){
+  # browser()
 
   arrayType <- match.arg(arrayType)
   genome <- match.arg(genome)
@@ -82,7 +83,7 @@ CoMethSingleRegion <- function(CpGs_char,
 
   ### Extract beta matrix for the input CpGs ###
   # take common cpgs in beta matrix and the region first
-  commonCpGs_char <- intersect (CpGsOrdered_df$cpg, row.names(dnam))
+  commonCpGs_char <- intersect(CpGsOrdered_df$cpg, row.names(dnam))
 
   if (length(commonCpGs_char) >= minCpGs){
 

@@ -1,8 +1,7 @@
-This version we started developing two years ago. Since then we made the documentation better.
+# coMethDMR 0.99.8
+We have been working on bug fixes and formatting/documentation changes as requested during the Bioconductor review. See these requests here: <https://github.com/Bioconductor/Contributions/issues/2064>
 
-Find below the main changes:
-
-# coMethDMR 1.0
+# coMethDMR 0.99.2
 
 ## Major Changes
 Bolstered documentation across all package help / manual files
