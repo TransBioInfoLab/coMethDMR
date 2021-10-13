@@ -211,7 +211,7 @@ CpGsInfoOneRegion(
 
 Genomic regions on the Illumina arrays can be defined based on their relations to genes or CpG Islands. To reduce redundancy in the tested genomic regions, we recommend first testing genic and intergenic regions, then add annotations to each genomic region for their relation to CpG islands. 
 
-In `coMethDMR` package, for 450k arrays, the relevant genomic regions to be analyzed are in files `450k_Gene_3_200.RDS` and `450k_InterGene_3_200.RDS`. For EPIC arrays, the relevant genomic regions are in files `EPIC_Gene_3_200.RDS` and `EPIC_InterGene_3_200.RDS`. These additional data sets are available at <https://github.com/TransBioInfoLab/coMethDMR_data>.
+In `coMethDMR` package, for 450k arrays, the relevant genomic regions to be analyzed are in files `450k_Gene_3_200.RDS` and `450k_InterGene_3_200.rds`. For EPIC arrays, the relevant genomic regions are in files `EPIC_Gene_3_200.rds` and `EPIC_InterGene_3_200.rds`. These additional data sets are available at <https://github.com/TransBioInfoLab/coMethDMR_data>.
 
 These files were created using the function `WriteCloseByAllRegions`, briefly, for genic regions, within each gene, we identified clusters of CpGs located closely (i.e. the maximum separation between any two consecutive probes is 200bp; `maxGap = 200`), and we required each cluster to have at least 3 CpGs (`minCpGs = 3`). For intergenic regions, we identified clusters CpGs similarly for each chromosome. To extract clusters of close-by CpGs from pre-defined genomic regions with different values of `maxGap` and `minCpGs`, the `WriteCloseByAllRegions` function can be used. 
 
@@ -221,7 +221,7 @@ The pre-computed genomic regions can be accessed using the following commands. F
 gene_ls <- readRDS(
   system.file(
     "extdata",
-    "450k_Gene_3_200.RDS",
+    "450k_Gene_3_200.rds",
     package = 'coMethDMR',
     mustWork = TRUE
     )
@@ -367,7 +367,7 @@ Finally, we demonstrate `coMethDMR` analysis for a particular gene, for example 
 data(betasChr22_df)
 ```
 
-We assume that the user knows the set of probes corresponding to the gene of interest. If this is not the case, we provide two data sets which contain mappings from gene symbols to probe IDs for both 450k ("450k_CpGstoGene_min3CpGs.RDS") and EPIC ("EPIC_CpGstoGene_min3CpGs.RDS") arrays. These two data sets are available at: <https://github.com/TransBioInfoLab/coMethDMR_data/tree/main/data>.
+We assume that the user knows the set of probes corresponding to the gene of interest. If this is not the case, we provide two data sets which contain mappings from gene symbols to probe IDs for both 450k ("450k_CpGstoGene_min3CpGs.rds") and EPIC ("EPIC_CpGstoGene_min3CpGs.rds") arrays. These two data sets are available at: <https://github.com/TransBioInfoLab/coMethDMR_data/tree/main/data>.
 ```{r message = FALSE}
 # list probes for this gene
 ARFGAP3_CpGs_char <- c(

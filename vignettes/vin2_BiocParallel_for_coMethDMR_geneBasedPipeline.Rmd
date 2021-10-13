@@ -211,7 +211,7 @@ With this list of regions and their probe IDs, repeat the analysis code in the p
 
 
 # A Comment on Using EPIC Methylation Arrays Datasets 
-The analysis for EPIC methylation arrays would be the same as those for 450k arrays, except by testing genomic regions in files "EPIC_Gene_3_200.RDS" and "EPIC_InterGene_3_200.RDS", instead of "450k_Gene_3_200.RDS" and "450k_InterGene_3_200.RDS". These data sets are available at <https://github.com/TransBioInfoLab/coMethDMR_data/tree/main/data>.
+The analysis for EPIC methylation arrays would be the same as those for 450k arrays, except by testing genomic regions in files "EPIC_Gene_3_200.rds" and "EPIC_InterGene_3_200.RDS", instead of "450k_Gene_3_200.rds" and "450k_InterGene_3_200.rds". These data sets are available at <https://github.com/TransBioInfoLab/coMethDMR_data/tree/main/data>.
 
 
 
