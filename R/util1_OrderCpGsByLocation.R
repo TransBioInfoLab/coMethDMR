@@ -1,9 +1,9 @@
 #' Order CpGs by genomic location
 #'
 #' @param CpGs_char vector of CpGs
-#' @param arrayType Type of array, 450k or EPIC
+#' @param arrayType Type of array: 450k or EPIC
 #' @param output vector of CpGs or dataframe with CpGs, CHR, MAPINFO
-#' @param genome Human genome of reference hg19 or hg38
+#' @param genome Human genome of reference: hg19 or hg38
 #'
 #' @return vector of CpGs ordered by location or dataframe with CpGs ordered by
 #'   location (cpg), chromosome (chr), position (pos)
@@ -38,7 +38,7 @@ OrderCpGsByLocation <- function(
   # "HM27.hg19.manifest"  "HM27.hg38.manifest"
   # "HM450.hg19.manifest" "HM450.hg38.manifest"
   manifest <- paste(
-    ifelse(arrayType == "450k", "HM450", "EPIC"),
+    switch(arrayType, "450k" = "HM450", "EPIC" = "EPIC"),
     genome, "manifest",
     sep = "."
   )
