@@ -1,26 +1,31 @@
-
-#' Get Residuals
+#' Get Linear Model Residuals
+#' 
+#' @description Remove covariate effects from methylayion values by fitting
+#'   probe-specific linear models
 #'
-#' @param dnam data frame or matrix of methylation values,
-#'    with row names = CpG IDs, column names = sample IDs. This is often the
-#'    genome-wide array data. Note that if beta values are the input here,
-#'    then \code{betaToM} should be set to \code{TRUE}.
-#'    If mvalues are the input, then \code{betaToM} should be set to \code{FALSE}
-#'
-#' @param betaToM indicates if converting methylation beta values to mvalues
-#'
+#' @param dnam data frame or matrix of methylation values with row names = CpG
+#'   IDs and column names = sample IDs. This is often the genome-wide array
+#'   data. 
+#' @param betaToM indicates if methylation beta values (ranging from [0, 1])
+#'   should be converted to M values (ranging from (-Inf, Inf)). Note that if
+#'   beta values are the input to \code{dnam}, then \code{betaToM} should be set
+#'   to \code{TRUE}, otherwise \code{FALSE}.
 #' @param pheno_df a data frame with phenotype and covariates, with variable
-#'    \code{Sample} indicating sample IDs.
-#'
+#'   \code{Sample} indicating sample IDs.
 #' @param covariates_char character vector for names of the covariate variables
-#'
 #' @param nCores_int Number of computing cores to be used when executing code
-#'    in parallel. Defaults to 1 (serial computing).
+#'   in parallel. Defaults to 1 (serial computing).
 #' @param ... Dots for additional arguments passed to the cluster constructor.
-#'    See \code{\link{CreateParallelWorkers}} for more information.
+#'   See \code{\link{CreateParallelWorkers}} for more information.
+#'    
+#' @details This function fits an ordinary linear model predicting methylation
+#'   values for each probe from the specified covariates. This process will be
+#'   useful in scenarios where methylation values in a region or at an
+#'   individual probe are known \emph{a priori} to have differential methylation
+#'   independent of the disease or condition of interest.
 #'
-
-#' @return output a matrix of residual values, in the same dimension as \code{dnam}
+#' @return output a matrix of residual values in the same dimension as
+#'   \code{dnam}
 #'
 #' @export
 #'

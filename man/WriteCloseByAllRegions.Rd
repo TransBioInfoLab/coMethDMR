@@ -15,13 +15,14 @@ WriteCloseByAllRegions(
 )
 }
 \arguments{
-\item{fileName}{Name of the RDS file where the output genomic regions will be saved.}
+\item{fileName}{Name of the RDS file where the output genomic regions will be
+saved.}
 
 \item{regions}{GRanges of input genomic regions}
 
-\item{genome}{Human genome of reference hg19 or hg38}
+\item{genome}{Human genome of reference: hg19 or hg38}
 
-\item{arrayType}{Type of array, can be "450k" or "EPIC"}
+\item{arrayType}{Type of array: "450k" or "EPIC"}
 
 \item{maxGap}{an integer, genomic locations within maxGap from each other
 are placed into the same cluster}
@@ -31,34 +32,36 @@ are placed into the same cluster}
 \item{...}{Dots for internal arguments. Currently unused.}
 }
 \value{
-a file with the genomic regions containing CpGs located closely within each
- inputting pre-defined genomic region
+Nothing. Instead, file with the genomic regions containing CpGs
+  located closely within each inputting pre-defined genomic region will be 
+  written to the disk
 }
 \description{
 Extract clusters of CpG probes located closely
 }
 \details{
-For \code{maxGap} = 200 and \code{minCpGs} = 3, we already calculated
-   the clusters of CpGs. They are saved in folder \code{/inst/extdata/}.
+For \code{maxGap} = 200 and \code{minCpGs} = 3, we have already
+  calculated the clusters of CpGs. They are saved in folder
+  \code{/inst/extdata/}.
 }
 \examples{
 
 regions <- GenomicRanges::GRanges(
-  seqnames = c("chr4","chr6","chr16","chr16","chr22","chr19"),
+  seqnames = c("chr4", "chr6", "chr16", "chr16", "chr22", "chr19"),
   ranges = c(
-    "174202697-174203520","28226203-28227482","89572934-89574634",
-    "67232460-67234167","38244199-38245362","39402823-39403373"
+    "174202697-174203520", "28226203-28227482", "89572934-89574634",
+    "67232460-67234167", "38244199-38245362", "39402823-39403373"
   )
 )
 
 # Uncomment out the example code below:
-  # WriteCloseByAllRegions(
-  #   regions = regions,
-  #   arrayType = "EPIC",
-  #   maxGap = 50,
-  #   minCpGs = 3,
-  #   fileName = "closeByRegions.rds"
-  # )
+# WriteCloseByAllRegions(
+#   regions = regions,
+#   arrayType = "EPIC",
+#   maxGap = 50,
+#   minCpGs = 3,
+#   fileName = "closeByRegions.rds"
+# )
 
 
 }

@@ -21,8 +21,8 @@ OrderCpGsByLocation(
 \item{output}{vector of CpGs or dataframe with CpGs, CHR, MAPINFO}
 }
 \value{
-vector of CpGs ordered by location or dataframe with CpGs ordered by location (cpg),
-chromosome (chr), position (pos)
+vector of CpGs ordered by location or dataframe with CpGs ordered by
+  location (cpg), chromosome (chr), position (pos)
 }
 \description{
 Order CpGs by genomic location

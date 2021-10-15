@@ -1,28 +1,27 @@
 #' Mark CpGs in contiguous and co-methylated region
 #'
-#' @param betaCluster_mat matrix of beta values, with rownames = sample ids,
-#'    column names = CpG ids. Note that the CpGs need to be ordered by their
-#'    genomic positions, this can be accomplished by the
-#'    \code{OrderCpGbyLocation} function.
-#' @param betaToM indicates if converting to mvalues before computing
-#'    correlations. Defaults to TRUE.
-#' @param rDropThresh_num thershold for min correlation between a cpg with sum
-#'    of the rest of the CpGs. Defaults to 0.4.
-#' @param method correlation method, can be "pearson" or "spearman"
+#' @param betaCluster_mat matrix of beta values, with rownames = sample ids and
+#'   column names = CpG ids. Note that the CpGs need to be ordered by their
+#'   genomic positions, this can be accomplished by the
+#'   \code{OrderCpGbyLocation} function.
+#' @param betaToM indicates if beta values should be converted to M values
+#'   before computing correlations. Defaults to TRUE.
+#' @param rDropThresh_num threshold for minimum correlation between a cpg with
+#'   the rest of the CpGs. Defaults to 0.4.
+#' @param method correlation method; can be "pearson" or "spearman"
 #' @param use method for handling missing values when calculating the
-#'    correlation. Defaults to \code{"complete.obs"} because the option
-#'    \code{"pairwise.complete.obs"} only works for Pearson correlation. 
+#'   correlation. Defaults to \code{"complete.obs"} because the option
+#'   \code{"pairwise.complete.obs"} only works for Pearson correlation. 
 #'
 #' @return A data frame with the following columns:
-#'
-#' \itemize{
-#'   \item{\code{CpG} : }{CpG ID}
-#'   \item{\code{keep} : }{The CpGs with \code{keep = 1} belong to the
-#'     contiguous and co-methylated region}
-#'   \item{\code{ind} : }{Index for the CpGs}
-#'   \item{\code{r_drop} : }{The correlation between each CpG with the sum of
-#'     the rest of the CpGs}
-#' }
+#'   \itemize{
+#'     \item{\code{CpG} : }{CpG ID}
+#'     \item{\code{keep} : }{The CpGs with \code{keep = 1} belong to the
+#'       contiguous and co-methylated region}
+#'     \item{\code{ind} : }{Index for the CpGs}
+#'     \item{\code{r_drop} : }{The correlation between each CpG with the sum of
+#'       the rest of the CpGs}
+#'   }
 #'
 #' @details An outlier CpG in a genomic region will typically have low
 #'   correlation with the rest of the CpGs in a genomic region. On the other
@@ -41,34 +40,40 @@
 #'      method = "pearson"
 #'    )
 #'    
-
-MarkComethylatedCpGs <- function (betaCluster_mat,
-                                  betaToM = TRUE,
-                                  rDropThresh_num = 0.4,
-                                  method = c("pearson", "spearman"),
-                                  use = "complete.obs") {
-
-
-  ### Check that betaToM == "TRUE" only if betaCluster_mat has beta values ###
-  if ((min(betaCluster_mat, na.rm = TRUE) < 0 | max(betaCluster_mat > 1, na.rm = TRUE)) & betaToM == "TRUE") {
-    message("The input methylation values are not beta values,
-         if they are M values, 'betaToM' should be FALSE")
-    return(NULL)
-  }
+MarkComethylatedCpGs <- function(betaCluster_mat,
+                                 betaToM = TRUE,
+                                 rDropThresh_num = 0.4,
+                                 method = c("pearson", "spearman"),
+                                 use = "complete.obs") {
 
   
   ### Calculate r_drop and Store CpGs ###
-  if (betaToM == "TRUE") {
+  if (betaToM != "TRUE") {
+    
+    clusterRdrop_df <- CreateRdrop(
+      data = betaCluster_mat, method = method, use = use
+    )
+    
+  } else {
+    
+    # Check for beta values outside [0,1]
+    badBetas <- 
+      min(betaCluster_mat, na.rm = TRUE) < 0 |
+        max(betaCluster_mat, na.rm = TRUE) > 1
+    
+    if (badBetas) {
+      stop(
+        "The input methylation values are not beta values; if they are M values,
+      'betaToM' should be FALSE",
+        call. = FALSE
+      )
+    }
     
     mvalues_mat <- log2(betaCluster_mat / (1 - betaCluster_mat))
     clusterRdrop_df <- CreateRdrop(
       data = mvalues_mat, method = method, use = use
     )
     
-  } else {
-    clusterRdrop_df <- CreateRdrop(
-      data = betaCluster_mat, method = method, use = use
-    )
   }
   
   CpGs_char <- as.character(clusterRdrop_df$CpG)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/GetResiduals.R
 \name{GetResiduals}
 \alias{GetResiduals}
-\title{Get Residuals}
+\title{Get Linear Model Residuals}
 \usage{
 GetResiduals(
   dnam,
@@ -14,13 +14,14 @@ GetResiduals(
 )
 }
 \arguments{
-\item{dnam}{data frame or matrix of methylation values,
-with row names = CpG IDs, column names = sample IDs. This is often the
-genome-wide array data. Note that if beta values are the input here,
-then \code{betaToM} should be set to \code{TRUE}.
-If mvalues are the input, then \code{betaToM} should be set to \code{FALSE}}
+\item{dnam}{data frame or matrix of methylation values with row names = CpG
+IDs and column names = sample IDs. This is often the genome-wide array
+data.}
 
-\item{betaToM}{indicates if converting methylation beta values to mvalues}
+\item{betaToM}{indicates if methylation beta values (ranging from [0, 1])
+should be converted to M values (ranging from (-Inf, Inf)). Note that if
+beta values are the input to \code{dnam}, then \code{betaToM} should be set
+to \code{TRUE}, otherwise \code{FALSE}.}
 
 \item{pheno_df}{a data frame with phenotype and covariates, with variable
 \code{Sample} indicating sample IDs.}
@@ -34,10 +35,19 @@ in parallel. Defaults to 1 (serial computing).}
 See \code{\link{CreateParallelWorkers}} for more information.}
 }
 \value{
-output a matrix of residual values, in the same dimension as \code{dnam}
+output a matrix of residual values in the same dimension as
+  \code{dnam}
 }
 \description{
-Get Residuals
+Remove covariate effects from methylayion values by fitting
+  probe-specific linear models
+}
+\details{
+This function fits an ordinary linear model predicting methylation
+  values for each probe from the specified covariates. This process will be
+  useful in scenarios where methylation values in a region or at an
+  individual probe are known \emph{a priori} to have differential methylation
+  independent of the disease or condition of interest.
 }
 \examples{
    data(betasChr22_df)

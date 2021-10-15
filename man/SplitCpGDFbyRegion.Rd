@@ -14,20 +14,20 @@ SplitCpGDFbyRegion(
 \arguments{
 \item{CpGsSubregions_df}{data frame with CpG and subregion number}
 
-\item{genome}{Human genome of reference hg19 or hg38}
+\item{genome}{Human genome of reference: hg19 or hg38}
 
-\item{arrayType}{Type of array, 450k or EPIC}
+\item{arrayType}{Type of array: 450k or EPIC}
 
-\item{returnAllCpGs}{indicates if outputting all the CpGs in the region
-when there is not a contiguous comethylated region or
-only the CpGs in the contiguous comethylated regions}
+\item{returnAllCpGs}{indicates if outputting all the CpGs in the region when
+there is not a contiguous comethylated region or only the CpGs in the
+contiguous comethylated regions}
 }
 \value{
 a list of comethylated subregions CpGs for a pre-defined region
 }
 \description{
 Split a dataframe of CpGs and comethylated subregions to a list
-   of CpGs in each subregion
+  of CpGs in each subregion
 }
 \examples{
    data(betaMatrix_ex4)

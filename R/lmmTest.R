@@ -1,37 +1,38 @@
 #' Fit mixed model to methylation values in one genomic region
 #'
-#' @param betaOne_df matrix of beta values for one genomic region,
-#'    with row names = CpG IDs, column names = sample IDs
+#' @param betaOne_df matrix of beta values for one genomic region, with row
+#'   names = CpG IDs and column names = sample IDs
 #' @param pheno_df a data frame with phenotype and covariates, with variable
-#'    \code{Sample} indicating sample IDs.
+#'   \code{Sample} indicating sample IDs.
 #' @param contPheno_char character string of the main effect (a continuous
-#'    phenotype) to be tested for association with methylation values in the
-#'    region
+#'   phenotype) to be tested for association with methylation values in the
+#'   region
 #' @param covariates_char character vector for names of the covariate variables
-#' @param modelType type of mixed model, can be \code{randCoef} for random
-#'    coefficient mixed model, or \code{simple} for simple linear mixed model.
-#' @param genome Human genome of reference hg19 or hg38
-#' @param arrayType Type of array, can be "450k" or "EPIC"
+#' @param modelType type of mixed model: can be \code{randCoef} for random
+#'    coefficient mixed model or \code{simple} for simple linear mixed model.
+#' @param genome Human genome of reference: hg19 or hg38
+#' @param arrayType Type of array: "450k" or "EPIC"
 #' @param outLogFile Name of log file for messages of mixed model analysis
 #'
-#' @return  A dataframe with one row for association result of one region: \code{Estimate}, \code{StdErr}, and
-#'    \code{pvalue} for the association of methylation values in the genomic
-#'    region tested vs. continuous phenotype \code{contPheno_char}
+#' @return  A dataframe with one row for association result of one region and 
+#'   the following columns: \code{Estimate}, \code{StdErr}, and \code{pvalue}
+#'   showing the association of methylation values in the genomic region tested
+#'   with the continuous phenotype supplied in \code{contPheno_char}
 #'
 #' @details This function implements a mixed model to test association between
-#'    methylation values in a genomic region with a continuous phenotype.
+#'   methylation M values in a genomic region with a continuous phenotype. In
+#'   our simulation studies, we found both models shown below are conservative,
+#'   so p-values are estimated from normal distributions instead of Student's 
+#'   \emph{t} distributions.
+#'   
+#'   When \code{modelType = "randCoef"}, the model is:
 #'
-#'    When \code{randCoef} is selected, the model is
+#'   \code{M ~ contPheno_char + covariates_char + (1|Sample) + (contPheno_char|CpG)}.
+#'   
+#'   The last term specifies random intercept and slope for each CpG. When
+#'   \code{modelType = "simple"}, the model is
 #'
-#'    \code{methylation M value ~ contPheno_char + covariates_char + (1|Sample) + (contPheno_char|CpG)}.
-#'    The last term specifies random intercept and slope for each CpG.
-#'
-#'    When \code{simple} is selected, the model is
-#'
-#'    \code{methylation M value ~ contPheno_char + covariates_char + (1|Sample)}
-#'
-#'    In our simulation studies, we found both models are conservative, so p-values are estimated from
-#'    normal distributions instead of t-distributions.
+#'   \code{M ~ contPheno_char + covariates_char + (1|Sample)}.
 #'
 #' @export
 #'
@@ -66,8 +67,8 @@
 
 lmmTest <- function(betaOne_df, pheno_df, contPheno_char, covariates_char,
                     modelType = c("randCoef", "simple"),
-                    genome = c("hg19","hg38"),
-                    arrayType = c("450k","EPIC"),
+                    genome = c("hg19", "hg38"),
+                    arrayType = c("450k", "EPIC"),
                     outLogFile = NULL){
   # browser()
 
@@ -101,7 +102,9 @@ lmmTest <- function(betaOne_df, pheno_df, contPheno_char, covariates_char,
     )
   )
 
-  modelFormula_char <- .MakeLmmFormula(contPheno_char, covariates_char, modelType)
+  modelFormula_char <- .MakeLmmFormula(
+    contPheno_char, covariates_char, modelType
+  )
 
   if(!is.null(outLogFile)){
     cat(paste0("Analyzing region ", regionName, ". \n"))
@@ -109,11 +112,14 @@ lmmTest <- function(betaOne_df, pheno_df, contPheno_char, covariates_char,
     message("Analyzing region ", regionName, ". \n")
   }
 
-  f <- tryCatch({
-    suppressMessages(
-      lmer(as.formula(modelFormula_char), betaOnePheno_df)
-    )
-  }, error = function(e){NULL})
+  f <- tryCatch(
+    {
+      suppressMessages(
+        lmer(as.formula(modelFormula_char), betaOnePheno_df)
+      )
+    },
+    error = function(e){NULL}
+  )
 
 
   if(is.null(f)){
@@ -158,14 +164,13 @@ lmmTest <- function(betaOne_df, pheno_df, contPheno_char, covariates_char,
 
   ### Return results ###
   nCpGs <- nrow(betaOne_df)
-  result <- cbind (
+  result <- cbind(
     chrom, start, end, nCpGs,
     ps_df,
     stringsAsFactors = FALSE
   )
 
   result
-
 
 }
 
@@ -177,14 +182,13 @@ lmmTest <- function(betaOne_df, pheno_df, contPheno_char, covariates_char,
   modelType <- match.arg(modelType)
 
   baseMod_char <- "Mvalue ~ (1|Sample)"
-
   randomCoef_char <- paste0("(",contPheno_char, "|ProbeID)")
 
   if (!is.null(covariates_char)){
     cov_char <- paste(covariates_char, collapse = " + ")
   }
 
-  ######
+  
   if(modelType == "randCoef"){
 
     ifelse(

@@ -25,7 +25,7 @@
 #'    FindComethylatedRegions(CpGs_df)
 #'
 FindComethylatedRegions <- function(CpGs_df, minCpGs_int = 3){
-  browser()
+  # browser()
 
   ### Get contiguous regions of CpGs ###
   contiguousRegion_ls <- getSegments(CpGs_df$keep, cutoff = 1)[["upIndex"]]

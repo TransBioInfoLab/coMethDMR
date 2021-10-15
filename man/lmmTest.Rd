@@ -16,8 +16,8 @@ lmmTest(
 )
 }
 \arguments{
-\item{betaOne_df}{matrix of beta values for one genomic region,
-with row names = CpG IDs, column names = sample IDs}
+\item{betaOne_df}{matrix of beta values for one genomic region, with row
+names = CpG IDs and column names = sample IDs}
 
 \item{pheno_df}{a data frame with phenotype and covariates, with variable
 \code{Sample} indicating sample IDs.}
@@ -28,38 +28,39 @@ region}
 
 \item{covariates_char}{character vector for names of the covariate variables}
 
-\item{modelType}{type of mixed model, can be \code{randCoef} for random
-coefficient mixed model, or \code{simple} for simple linear mixed model.}
+\item{modelType}{type of mixed model: can be \code{randCoef} for random
+coefficient mixed model or \code{simple} for simple linear mixed model.}
 
-\item{genome}{Human genome of reference hg19 or hg38}
+\item{genome}{Human genome of reference: hg19 or hg38}
 
-\item{arrayType}{Type of array, can be "450k" or "EPIC"}
+\item{arrayType}{Type of array: "450k" or "EPIC"}
 
 \item{outLogFile}{Name of log file for messages of mixed model analysis}
 }
 \value{
-A dataframe with one row for association result of one region: \code{Estimate}, \code{StdErr}, and
-   \code{pvalue} for the association of methylation values in the genomic
-   region tested vs. continuous phenotype \code{contPheno_char}
+A dataframe with one row for association result of one region and 
+  the following columns: \code{Estimate}, \code{StdErr}, and \code{pvalue}
+  showing the association of methylation values in the genomic region tested
+  with the continuous phenotype supplied in \code{contPheno_char}
 }
 \description{
 Fit mixed model to methylation values in one genomic region
 }
 \details{
 This function implements a mixed model to test association between
-   methylation values in a genomic region with a continuous phenotype.
+  methylation M values in a genomic region with a continuous phenotype. In
+  our simulation studies, we found both models shown below are conservative,
+  so p-values are estimated from normal distributions instead of Student's 
+  \emph{t} distributions.
+  
+  When \code{modelType = "randCoef"}, the model is:
 
-   When \code{randCoef} is selected, the model is
+  \code{M ~ contPheno_char + covariates_char + (1|Sample) + (contPheno_char|CpG)}.
+  
+  The last term specifies random intercept and slope for each CpG. When
+  \code{modelType = "simple"}, the model is
 
-   \code{methylation M value ~ contPheno_char + covariates_char + (1|Sample) + (contPheno_char|CpG)}.
-   The last term specifies random intercept and slope for each CpG.
-
-   When \code{simple} is selected, the model is
-
-   \code{methylation M value ~ contPheno_char + covariates_char + (1|Sample)}
-
-   In our simulation studies, we found both models are conservative, so p-values are estimated from
-   normal distributions instead of t-distributions.
+  \code{M ~ contPheno_char + covariates_char + (1|Sample)}.
 }
 \examples{
   data(betasChr22_df)

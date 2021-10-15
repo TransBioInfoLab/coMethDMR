@@ -11,8 +11,8 @@ GetCpGsInRegion(
 )
 }
 \arguments{
-\item{regionName_char}{character string with location information for one region in
-this format: "chrxx:xxxxxx-xxxxxx"}
+\item{regionName_char}{character string with location information for one
+region in the format \code{"chrxx:xxxxxx-xxxxxx"}}
 
 \item{genome}{human genome of reference hg19 (default) or hg38}
 

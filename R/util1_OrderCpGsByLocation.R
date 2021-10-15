@@ -5,8 +5,9 @@
 #' @param output vector of CpGs or dataframe with CpGs, CHR, MAPINFO
 #' @param genome Human genome of reference hg19 or hg38
 #'
-#' @return vector of CpGs ordered by location or dataframe with CpGs ordered by location (cpg),
-#' chromosome (chr), position (pos)
+#' @return vector of CpGs ordered by location or dataframe with CpGs ordered by
+#'   location (cpg), chromosome (chr), position (pos)
+#'   
 #' @export
 #'
 #' @importFrom  sesameData sesameDataGet
@@ -23,8 +24,8 @@
 #' 
 OrderCpGsByLocation <- function(
   CpGs_char,
-  genome = c("hg19","hg38"),
-  arrayType = c("450k","EPIC"),
+  genome = c("hg19", "hg38"),
+  arrayType = c("450k", "EPIC"),
   output = c("vector", "dataframe")
 ){
 
@@ -37,7 +38,7 @@ OrderCpGsByLocation <- function(
   # "HM27.hg19.manifest"  "HM27.hg38.manifest"
   # "HM450.hg19.manifest" "HM450.hg38.manifest"
   manifest <- paste(
-    ifelse(arrayType == "450k","HM450","EPIC"),
+    ifelse(arrayType == "450k", "HM450", "EPIC"),
     genome, "manifest",
     sep = "."
   )
@@ -50,14 +51,18 @@ OrderCpGsByLocation <- function(
       call. = FALSE
     )
   }
-  CpGs.gr <- CpGlocations.gr[ CpGs_char[goodCpGs_lgl] ] %>% sort
+  CpGs.gr <- sort(
+    CpGlocations.gr[ CpGs_char[goodCpGs_lgl] ]
+  )
 
   ### Select and return output ###
   if (output == "dataframe") {
-    CpGsOrdered_df <- as.data.frame(CpGs.gr)[,c("seqnames","start")]
+    
+    CpGsOrdered_df <- as.data.frame(CpGs.gr)[ , c("seqnames", "start")]
     CpGsOrdered_df$cpg <- names(CpGs.gr)
-    colnames(CpGsOrdered_df) <- c("chr","pos","cpg")
+    colnames(CpGsOrdered_df) <- c("chr", "pos", "cpg")
     CpGsOrdered_df
+    
   } else {
     as.character(names(CpGs.gr))
   }

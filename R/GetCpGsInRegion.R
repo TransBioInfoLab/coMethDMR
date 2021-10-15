@@ -1,15 +1,13 @@
-
 #' Extract probe IDs for CpGs located in a genomic region
 #'
-#' @param regionName_char character string with location information for one region in
-#'    this format: "chrxx:xxxxxx-xxxxxx"
+#' @param regionName_char character string with location information for one
+#'   region in the format \code{"chrxx:xxxxxx-xxxxxx"}
 #' @param arrayType Type of array, 450k or EPIC
 #' @param genome human genome of reference hg19 (default) or hg38
 #'
 #' @return vector of CpG probe IDs mapped to the genomic region
 #' @export
 #'
-#' @importFrom tidyr separate %>%
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @importFrom IRanges subsetByOverlaps
 #'
@@ -21,8 +19,8 @@
 #'    )
 GetCpGsInRegion <- function(
   regionName_char,
-  genome = c("hg19","hg38"),
-  arrayType = c("450k","EPIC")
+  genome = c("hg19", "hg38"),
+  arrayType = c("450k", "EPIC")
 ){
 
   arrayType <- match.arg(arrayType)
@@ -33,18 +31,14 @@ GetCpGsInRegion <- function(
   # "HM27.hg19.manifest"  "HM27.hg38.manifest"
   # "HM450.hg19.manifest" "HM450.hg38.manifest"
   manifest <- paste(
-    ifelse(arrayType == "450k","HM450","EPIC"),
+    ifelse(arrayType == "450k", "HM450", "EPIC"),
     genome, "manifest",
     sep = "."
   )
   CpGlocations.gr <- sesameDataGet(manifest)
 
   ### Split the region name in chr and positions ###
-  gr <- regionName_char %>%
-    as.data.frame %>%
-    separate(col = ".", into = c("seqnames","start","end")) %>%
-    makeGRangesFromDataFrame()
-
+  gr <- RegionsToRanges(regionName_char)
   CpGlocations.gr <- subsetByOverlaps(CpGlocations.gr, gr)
 
   OrderCpGsByLocation(
@@ -53,4 +47,5 @@ GetCpGsInRegion <- function(
     arrayType = arrayType,
     output = "vector"
   )
+  
 }

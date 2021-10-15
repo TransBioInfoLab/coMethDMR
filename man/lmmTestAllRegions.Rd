@@ -2,8 +2,7 @@
 % Please edit documentation in R/lmmTestAllRegions.R
 \name{lmmTestAllRegions}
 \alias{lmmTestAllRegions}
-\title{Fit mixed model to test association between a continuous phenotype and
-methylation values in a list of genomic regions}
+\title{Linear Mixed Models by Region}
 \usage{
 lmmTestAllRegions(
   betas,
@@ -22,12 +21,12 @@ lmmTestAllRegions(
 }
 \arguments{
 \item{betas}{data frame or matrix of beta values for all genomic regions,
-with row names = CpG IDs, column names = sample IDs. This is often the
+with row names = CpG IDs and column names = sample IDs. This is often the
 genome-wide array data.}
 
-\item{region_ls}{a list of genomic regions, each item is a vector of CpG IDs
-   within a genomic region. The co-methylated
-regions can be obtained by function \code{CoMethAllRegions}.}
+\item{region_ls}{a list of genomic regions; each item is a vector of CpG IDs
+within a genomic region. The co-methylated regions can be obtained by
+function \code{\link{CoMethAllRegions}}.}
 
 \item{pheno_df}{a data frame with phenotype and covariates, with variable
 \code{Sample} indicating sample IDs.}
@@ -38,12 +37,12 @@ region}
 
 \item{covariates_char}{character vector for names of the covariate variables}
 
-\item{modelType}{type of mixed model, can be \code{randCoef} for random
-coefficient mixed model, or \code{simple} for simple linear mixed model.}
+\item{modelType}{type of mixed model; can be \code{randCoef} for random
+coefficient mixed model or \code{simple} for simple linear mixed model.}
 
-\item{genome}{Human genome of reference hg19 or hg38}
+\item{genome}{Human genome of reference: hg19 or hg38}
 
-\item{arrayType}{Type of array, can be "450k" or "EPIC"}
+\item{arrayType}{Type of array: "450k" or "EPIC"}
 
 \item{outFile}{output .csv file with the results for the mixed model analysis}
 
@@ -56,47 +55,47 @@ in parallel. Defaults to 1 (serial computing).}
 See \code{\link{CreateParallelWorkers}} for more information.}
 }
 \value{
-(1) output file: a .csv file with location of the genomic region
-  (\code{chrom, start, end}), number of CpGs (\code{nCpGs}), \code{Estimate},
-  Standard error (\code{StdErr}) of the test statistic, p-value and False
-  Discovery Rate (FDR) for association between methylation values in each
-  genomic region with phenotype (\code{pValue}).
-
-(2) log file: a .txt file that includes messages for mixed model fitting
+If \code{outFile} is \code{NULL}, this function returns a data frame
+  as described below. If \code{outFile} is specified, this function writes a
+  data frame in .csv format with the following information to the disk:
+  location of the genomic region (\code{chrom, start, end}), number of CpGs
+  (\code{nCpGs}), \code{Estimate}, Standard error (\code{StdErr}) of the test
+  statistic, p-value and False Discovery Rate (FDR) for association between
+  methylation values in each genomic region with phenotype (\code{pValue}).
+  
+  If \code{outLogFile} is specified, this function also writes a .txt file
+  that includes messages for mixed model fitting to the disk.
 }
 \description{
-Fit mixed model to test association between a continuous phenotype and
-methylation values in a list of genomic regions
+Fit mixed model to test association between a continuous
+  phenotype and methylation values in a list of genomic regions
 }
 \details{
 This function implements a mixed model to test association between
-   methylation values in a genomic region with a continuous phenotype.
+  methylation M values in a genomic region with a continuous phenotype. In
+  our simulation studies, we found both models shown below are conservative,
+  so p-values are estimated from normal distributions instead of Student's 
+  \emph{t} distributions.
+  
+  When \code{modelType = "randCoef"}, the model is:
 
-   When \code{randCoef} is selected, the model is
+  \code{M ~ contPheno_char + covariates_char + (1|Sample) + (contPheno_char|CpG)}.
+  
+  The last term specifies random intercept and slope for each CpG. When
+  \code{modelType = "simple"}, the model is
 
-   \code{methylation M value ~ contPheno_char + covariates_char + (1|Sample) + (contPheno_char|CpG)}.
-   The last term specifies both random intercept and slope for each CpG.
+  \code{M ~ contPheno_char + covariates_char + (1|Sample)}.
 
-   When \code{simple} is selected, the model is
-
-   \code{methylation M value ~ contPheno_char + covariates_char + (1|Sample)}
-
-   In our simulation studies, we found both models are conservative, so p-values are estimated from
-   normal distributions instead of t-distributions.
-
-   For the results of mixed models, note that
-
-   (1) When mixed model failed to converge, p-value for mixed model is set to 1.
-
-   (2) When mixed model is singular, at least one of the estimated variance
-   components for intercepts or slopes random effects is 0, because there
-   isn't enough variabilities in data to estimate the random effects. In this
-   case, mixed model reduces to a fixed effects model. The p-values for these
-   regions are still valid.
+  For the results of mixed models, note that if the mixed model failed to
+  converge, p-value for mixed model is set to 1. Also, if the mixed model is
+  singular, at least one of the estimated variance components for intercepts
+  or slopes random effects is 0, because there isn't enough variability in
+  the data to estimate the random effects. In this case, the mixed model
+  reduces to a fixed effects model. The p-values for these regions are still
+  valid.
 }
 \examples{
    data(betasChr22_df)
-
    data(pheno_df)
 
    CpGisland_ls <- readRDS(
@@ -118,10 +117,10 @@ This function implements a mixed model to test association between
    )
 
 
-   results <- lmmTestAllRegions(
+   results_df <- lmmTestAllRegions(
      betas = betasChr22_df,
      region_ls = coMeth_ls,
-     pheno_df,
+     pheno_df = pheno_df,
      contPheno_char = "stage",
      covariates_char = "age.brain",
      modelType = "randCoef",

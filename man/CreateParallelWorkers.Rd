@@ -16,14 +16,16 @@ computation}
 A parameter class for use in parallel evaluation
 }
 \description{
-This function is a wrapper for the \code{\link[BiocParallel]{SnowParam}} and
+This function is an operating-system agnostic wrapper for the
+  \code{\link[BiocParallel]{SnowParam}} and
    \code{\link[BiocParallel]{MulticoreParam}} constructor functions.
 }
 \details{
 This function checks the operating system and then creates a
-   cluster of workers using the \code{SnowParam} function for Windows
-   machines and the \code{MulticoreParam} function for non-Windows machines.
+  cluster of workers using the \code{SnowParam} function for Windows machines
+  and the \code{MulticoreParam} function for non-Windows machines.
 }
 \examples{
    workers_cl <- CreateParallelWorkers(nCores = 4)
+   
 }
