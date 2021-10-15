@@ -37,7 +37,7 @@ OrderCpGsByLocation <- function(
   # "HM27.hg19.manifest"  "HM27.hg38.manifest"
   # "HM450.hg19.manifest" "HM450.hg38.manifest"
   manifest <- paste(
-    switch("27k", "27k" = "HM27","450k" = "HM450", "EPIC" = EPIC),
+    switch(arrayType, "27k" = "HM27","450k" = "HM450", "EPIC" = "EPIC"),
     genome, "manifest",
     sep = "."
   )
