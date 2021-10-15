@@ -10,14 +10,8 @@
 #'      \item{\code{chrom} : }{the chromosome the region is on, e.g. ``chr22''}
 #'      \item{\code{start} : }{the region start point}
 #'      \item{\code{end} : }{the region end point}
-#'      }
-#'
-#' Optionally, the data frame can also has \code{regionType},
-#' which is a character string marking the type of genomic region tested.
-#'   See details below.
-#'
+#'    }
 #' @param arrayType Type of array: 450k or EPIC
-#'
 #' @param nCores_int Number of computing cores to be used when executing code
 #'    in parallel. Defaults to 1 (serial computing).
 #' @param ... Dots for additional arguments passed to the cluster constructor.
@@ -106,7 +100,7 @@ AnnotateResults <- function(
 
 
     ###  Define Wrapper Function  ###
-    AnnotateRow <- function(row_df, loc_df, info_df, island_df, includeType){
+    AnnotateRow <- function(row_df, loc_df, info_df, island_df){
         # browser()
 
         ###  Filter Data Frames  ###
@@ -150,30 +144,18 @@ AnnotateResults <- function(
 
 
         ###  Return Annotated 1-Row Data Frame  ###
-        if(includeType){
-            # row_df$Relation_to_UCSC_CpG_Island <- ifelse(
-            #   test = row_df$regionType %in%
-            #     c("NSHELF", "NSHORE", "ISLAND", "SSHORE", "SSHELF"),
-            #   yes  = row_df$regionType,
-            #   no   = ""
-            # )
-        }
         row_df$UCSC_RefGene_Group <-
             paste0(unique(refGeneGroup_char), collapse = ";")
         row_df$UCSC_RefGene_Accession <-
             paste0(unique(refGeneAcc_char), collapse = ";")
         row_df$UCSC_RefGene_Name <-
             paste0(unique(refGeneName_char), collapse = ";")
-        # row_df$probes <-
-        #   paste0(unique(probes_char), collapse = ";")
         row_df$Relation_to_Island <-
             paste0(unique(refIslandRelation_char), collapse = ";")
 
         row_df
 
     }
-
-    inclType_logi <- !is.null(lmmRes_df$regionType)
 
     cluster <- CreateParallelWorkers(nCores_int, ...)
 
@@ -184,8 +166,7 @@ AnnotateResults <- function(
                 row_df = lmmRes_df[row, ],
                 loc_df = locations_df,
                 info_df = UCSCinfo_df,
-                island_df = IslandsUCSCinfo_df,
-                includeType = inclType_logi
+                island_df = IslandsUCSCinfo_df
             )},  BPPARAM = cluster
     )
     do.call(rbind, resultsAnno_ls)

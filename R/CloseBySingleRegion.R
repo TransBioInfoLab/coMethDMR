@@ -39,12 +39,14 @@
 #'
 CloseBySingleRegion <- function(
   CpGs_char,
-  genome = c("hg19","hg38"),
-  arrayType = c("450k","EPIC"),
+  genome = c("hg19", "hg38"),
+  arrayType = c("450k", "EPIC"),
   maxGap = 200,
   minCpGs = 3
 ){
 
+  genome <- match.arg(genome)
+  arrayType <- match.arg(arrayType)
   CpGsOrdered_df <- OrderCpGsByLocation(
     CpGs_char, genome, arrayType, output = "dataframe"
   )

@@ -12,43 +12,45 @@ CreateOutputDF(
 )
 }
 \arguments{
-\item{keepCpGs_df}{a data frame with CpG = CpG name,
-keep = indicator for co-methylated CpG,
-r_drop = correlation between the CpG with rest of the CpGs}
+\item{keepCpGs_df}{a data frame with \code{CpG} = CpG name, \code{keep} =
+indicator for co-methylated CpGs, and \code{r_drop} = correlation between 
+the CpG with rest of the CpGs}
 
-\item{keepContiguousCpGs_df}{a data frame with ProbeID = CpG name,
-Subregion = contiguous comethylated subregion number}
+\item{keepContiguousCpGs_df}{a data frame with \code{ProbeID} = CpG name and
+\code{Subregion} = contiguous comethylated subregion number}
 
-\item{CpGsOrdered_df}{a data frame of CpG location with
-chr = chromosome number, pos = genomic position, cpg = CpG name}
+\item{CpGsOrdered_df}{a data frame of CpG location with \code{chr} =
+chromosome number, \code{pos} = genomic position, and \code{cpg} = CpG name}
 
-\item{returnAllCpGs}{indicates if outputting all the CpGs in the region
-when there is not a contiguous comethylated region or
-only the CpGs in the contiguous comethylated regions}
+\item{returnAllCpGs}{indicates if outputting all the CpGs in the region when
+there is not a contiguous comethylated region or only the CpGs in the
+contiguous comethylated regions}
 }
 \value{
-a data frame with CpG = CpG name,
-   Chr = chromosome number,
-   MAPINFO = genomic position,
-   r_drop = correlation between the CpG with rest of the CpGs,
-   keep = indicator for co-methylated CpG,
-   keep_contiguous = contiguous comethylated subregion number
+a data frame with \code{CpG} = CpG name, \code{Chr} = chromosome
+  number, \code{MAPINFO} = genomic position, \code{r_drop} = correlation
+  between the CpG with rest of the CpGs, \code{keep} = indicator for
+  co-methylated CpG, and \code{keep_contiguous} = contiguous comethylated
+  subregion number
 }
 \description{
 Create Output Dataframe
 }
 \examples{
    data(betasChr22_df)
-   CpGsChr22_char<-c("cg02953382", "cg12419862", "cg24565820", "cg04234412",
-      "cg04824771", "cg09033563", "cg10150615", "cg18538332", "cg20007245",
-      "cg23131131", "cg25703541")
+   CpGsChr22_char <- c(
+     "cg02953382", "cg12419862", "cg24565820", "cg04234412", "cg04824771",
+     "cg09033563", "cg10150615", "cg18538332", "cg20007245", "cg23131131",
+     "cg25703541"
+   )
+      
    CpGsOrdered_df <- OrderCpGsByLocation(
       CpGsChr22_char, arrayType="450k", output = "dataframe"
    )
-   betaCluster_mat <- betasChr22_df[CpGsOrdered_df$cpg,]
-   betaClusterTransp_mat <- t(betaCluster_mat)
-   keepCpGs_df <- MarkComethylatedCpGs(betaCluster_mat = betaClusterTransp_mat)
+   betaCluster_mat <- t(betasChr22_df[CpGsOrdered_df$cpg, ])
+   keepCpGs_df <- MarkComethylatedCpGs(betaCluster_mat = betaCluster_mat)
    keepContiguousCpGs_df <- FindComethylatedRegions(CpGs_df = keepCpGs_df)
    CreateOutputDF(keepCpGs_df, keepContiguousCpGs_df, CpGsOrdered_df)
+   
 }
 \keyword{internal}

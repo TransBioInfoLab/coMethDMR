@@ -2,43 +2,49 @@
 % Please edit documentation in R/CpGsInfoOneRegion.R
 \name{CpGsInfoOneRegion}
 \alias{CpGsInfoOneRegion}
-\title{Test associations of individual CpGs in a genomic region with a continuous phenotype}
+\title{Test Associations Between a Region and Phenotype}
 \usage{
 CpGsInfoOneRegion(
   regionName_char,
   betas_df,
   pheno_df,
   contPheno_char,
-  covariates_char,
+  covariates_char = NULL,
   arrayType = c("450k", "EPIC")
 )
 }
 \arguments{
-\item{regionName_char}{character string of location information for a genomic region, specified in
-the format of "chrxx:xxxxxx-xxxxxx"}
+\item{regionName_char}{character string of location information for a genomic
+region, specified in the format of \code{"chrxx:xxxxxx-xxxxxx"}}
 
-\item{betas_df}{data frame of beta values with row names = CpG IDs, column names = sample IDs}
+\item{betas_df}{data frame of beta values with row names = CpG IDs, column
+names = sample IDs}
 
-\item{pheno_df}{a data frame with phenotype and covariate variables, with variable "Sample" for sample IDs.}
+\item{pheno_df}{a data frame with phenotype and covariate variables, with
+variable "Sample" for sample IDs.}
 
-\item{contPheno_char}{character string of the continuous phenotype, to be tested against methylation values}
+\item{contPheno_char}{character string of the continuous phenotype to be
+tested against methylation values}
 
 \item{covariates_char}{character vector of covariate variables names}
 
 \item{arrayType}{Type of array, can be "450k" or "EPIC"}
 }
 \value{
-a data frame with location of the genomic region (Region), CpG ID (cpg), chromosome (chr),
-position (pos), results for testing association of methylation in individual CpGs with
-continuous phenotype (slopeEstimate, slopePval) and annotations for the regions
+a data frame with location of the genomic region (Region), CpG ID
+  (cpg), chromosome (chr), position (pos), results for testing association of
+  methylation in individual CpGs with continuous phenotype (slopeEstimate,
+  slopePval) and annotations for the region.
 }
 \description{
-Test associations of individual CpGs in a genomic region with a continuous phenotype
+Test associations of individual CpGs in a genomic region with a
+  continuous phenotype
 }
 \details{
 This function implements linear models that test association between
-methylation values in a genomic region with a continuous phenotype. Note that methylation M values
-are used as regression outcomes in these models. The model for each CpG is:
+  methylation values in a genomic region with a continuous phenotype. Note
+  that methylation M values are used as regression outcomes in these models.
+  The model for each CpG is:
 
   \code{methylation M value ~ contPheno_char + covariates_char}
 }

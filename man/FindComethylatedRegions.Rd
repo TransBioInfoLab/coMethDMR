@@ -2,23 +2,25 @@
 % Please edit documentation in R/FindComethylatedRegions.R
 \name{FindComethylatedRegions}
 \alias{FindComethylatedRegions}
-\title{Find contiguous comethylated regions based on output file from function \code{MarkComethylatedCpGs}}
+\title{Find Contiguous Co-Methylated Regions}
 \usage{
 FindComethylatedRegions(CpGs_df, minCpGs_int = 3)
 }
 \arguments{
-\item{CpGs_df}{an output dataframe from function \code{MarkComethylatedCpGs}, with variables
+\item{CpGs_df}{an output dataframe from function \code{MarkComethylatedCpGs},
+with variables: \code{CpG, keep, ind, r_drop}. See details in documentation
+for \code{\link{MarkComethylatedCpGs}}.}
 
- \code{CpG, keep, ind, r_drop}. See details in documentation for \code{MarkComethylatedCpGs}.}
-
-\item{minCpGs_int}{an integer, indicates minimum number of CpGs for output genomic regions}
+\item{minCpGs_int}{an integer indicating the minimum number of CpGs for
+output genomic regions}
 }
 \value{
-A data frame with variables \code{ProbeID} and \code{Subregion} (index for each output
-contiguous comethylated regions)
+A data frame with variables \code{ProbeID} and \code{Subregion}
+  (index for each output contiguous comethylated region)
 }
 \description{
-Find contiguous comethylated regions based on output file from function \code{MarkComethylatedCpGs}
+Find contiguous comethylated regions based on output file from
+  function \code{MarkComethylatedCpGs}
 }
 \examples{
    data(betaMatrix_ex4)

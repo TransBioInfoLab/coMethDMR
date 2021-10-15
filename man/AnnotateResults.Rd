@@ -13,11 +13,7 @@ This data frame must contain the following columns:
      \item{\code{chrom} : }{the chromosome the region is on, e.g. ``chr22''}
      \item{\code{start} : }{the region start point}
      \item{\code{end} : }{the region end point}
-     }
-
-Optionally, the data frame can also has \code{regionType},
-which is a character string marking the type of genomic region tested.
-  See details below.}
+   }}
 
 \item{arrayType}{Type of array: 450k or EPIC}
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/CpGsInfoAllRegions.R
 \name{CpGsInfoAllRegions}
 \alias{CpGsInfoAllRegions}
-\title{Test associations of individual CpGs in multiple genomic regions with a continuous phenotype}
+\title{Test Associations Between Regions and Phenotype}
 \usage{
 CpGsInfoAllRegions(
   AllRegionNames_char,
@@ -14,33 +14,41 @@ CpGsInfoAllRegions(
 )
 }
 \arguments{
-\item{AllRegionNames_char}{vector of character strings with location info for all the genomic regions.
-Each region should be specified in this format: "chrxx:xxxxxx-xxxxxx"}
+\item{AllRegionNames_char}{vector of character strings with location info for
+all the genomic regions. Each region should be specified in this format:
+\code{"chrxx:xxxxxx-xxxxxx"}}
 
-\item{betas_df}{data frame of beta values for all genomic regions,
-with row names = CpG IDs, column names = sample IDs}
+\item{betas_df}{data frame of beta values for all genomic regions, with row
+names = CpG IDs amd column names = sample IDs}
 
-\item{pheno_df}{a data frame with phenotype and covariate variables, with variable "Sample" for sample IDs.}
+\item{pheno_df}{a data frame with phenotype and covariate variables, with
+variable "Sample" for sample IDs.}
 
-\item{contPheno_char}{character string of the continuous phenotype, to be tested against methylation values}
+\item{contPheno_char}{character string of the continuous phenotype to be
+tested against methylation values}
 
 \item{covariates_char}{character vector of covariate variables names}
 
 \item{arrayType}{Type of array, can be "450k" or "EPIC"}
 }
 \value{
-a data frame with locations of the genomic region (Region), CpG ID (cpg), chromosome (chr),
-position (pos), and results for testing association of methylation in individual CpGs with
-continuous phenotype (slopeEstimate, slopePval), UCSC_RefGene_Name, UCSC_RefGene_Accession,
-UCSC_RefGene_Group
+a data frame with locations of the genomic region (Region), CpG ID
+   (cpg), chromosome (chr), position (pos), results for testing association
+   of methylation in individual CpGs with the continuous phenotype
+   (slopeEstimate, slopePval), UCSC_RefGene_Name, UCSC_RefGene_Accession,
+   and UCSC_RefGene_Group
 }
 \description{
-Test associations of individual CpGs in multiple genomic regions with a continuous phenotype
+Test associations of individual CpGs in multiple genomic regions
+  with a continuous phenotype
 }
 \examples{
    data(betasChr22_df)
    data(pheno_df)
-   AllRegionNames_char <- c("chr22:18267969-18268249", "chr22:18531243-18531447")
+   AllRegionNames_char <- c(
+     "chr22:18267969-18268249",
+     "chr22:18531243-18531447"
+   )
 
    CpGsInfoAllRegions(
      AllRegionNames_char,

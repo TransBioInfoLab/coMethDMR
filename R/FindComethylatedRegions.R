@@ -1,15 +1,16 @@
-
-
-#' Find contiguous comethylated regions based on output file from function \code{MarkComethylatedCpGs}
+#' Find Contiguous Co-Methylated Regions
+#' 
+#' @description Find contiguous comethylated regions based on output file from
+#'   function \code{MarkComethylatedCpGs}
 #'
-#' @param CpGs_df an output dataframe from function \code{MarkComethylatedCpGs}, with variables
+#' @param CpGs_df an output dataframe from function \code{MarkComethylatedCpGs},
+#'   with variables: \code{CpG, keep, ind, r_drop}. See details in documentation
+#'   for \code{\link{MarkComethylatedCpGs}}.
+#' @param minCpGs_int an integer indicating the minimum number of CpGs for
+#'   output genomic regions
 #'
-#'  \code{CpG, keep, ind, r_drop}. See details in documentation for \code{MarkComethylatedCpGs}.
-#'
-#' @param minCpGs_int an integer, indicates minimum number of CpGs for output genomic regions
-#'
-#' @return A data frame with variables \code{ProbeID} and \code{Subregion} (index for each output
-#' contiguous comethylated regions)
+#' @return A data frame with variables \code{ProbeID} and \code{Subregion}
+#'   (index for each output contiguous comethylated region)
 #'
 #' @export
 #'
@@ -24,58 +25,56 @@
 #'    FindComethylatedRegions(CpGs_df)
 #'
 FindComethylatedRegions <- function(CpGs_df, minCpGs_int = 3){
+  browser()
 
   ### Get contiguous regions of CpGs ###
-  contiguousRegion_ls <- getSegments(CpGs_df$keep, cutoff = 1)
-  nSegs_int <- length(contiguousRegion_ls$upIndex)
+  contiguousRegion_ls <- getSegments(CpGs_df$keep, cutoff = 1)[["upIndex"]]
+  nSegs_int <- length(contiguousRegion_ls)
 
-  if (nSegs_int > 0){
+  if (nSegs_int == 0){
+    
+    contiguousRegionsCpGs <- cbind(
+      as.data.frame(CpGs_df$CpG),
+      rep(0, length(CpGs_df$CpG))
+    )
+    
+  } else {
 
     ### Select segments with number of CpGs >= minCpGs ###
-    contiguous_int <- lengths(contiguousRegion_ls$upIndex)
+    contiguous_int <- lengths(contiguousRegion_ls)
     contiguousMinCpGs_idx <- which(contiguous_int >= minCpGs_int)
     nSegsMinCpGs_int <- length(contiguousMinCpGs_idx)
 
-    ### Create output dataframe with CpGs and contiguous comethylated subregion number ###
-    #globalVariables("ind")
+    ### Create output dataframe ###
+    # Keep CpGs and contiguous comethylated subregion number
     ind <- NULL
-
-       if (nSegsMinCpGs_int > 0){
-
-         inner_ls <- lapply(seq_len(nSegsMinCpGs_int), function(u){
-
-           data.frame(
-             CpG = subset(
-               CpGs_df,
-               ind %in% contiguousRegion_ls$upIndex[[contiguousMinCpGs_idx[u]]],
-               select = "CpG"
-             ),
-             subregion = rep(
-               u, length(contiguousRegion_ls$upIndex[[contiguousMinCpGs_idx[u]]])
-             )
-           )
-
-         })
-
-         contiguousRegionsCpGs <- do.call(rbind, inner_ls)
-
-
-       } else {
-             contiguousRegionsCpGs <- cbind(
-               as.data.frame(CpGs_df$CpG),
-               rep(0,length(CpGs_df$CpG))
-             )
-         }
-
-
-  } else {
+    if (nSegsMinCpGs_int == 0){
+      
       contiguousRegionsCpGs <- cbind(
         as.data.frame(CpGs_df$CpG),
-        rep(0,length(CpGs_df$CpG))
+        rep(0, length(CpGs_df$CpG))
       )
-    }
+      
+    } else {
+      
+      burner_fun <- function(u){
+        
+        regionSet <- contiguousRegion_ls[[contiguousMinCpGs_idx[u]]]
+        whichCpG <- subset(CpGs_df, ind %in% regionSet, select = "CpG")
+        subRegion_idx <- rep(u, length(regionSet))
+        
+        data.frame(CpG = whichCpG, subregion = subRegion_idx)
+        
+      }
+      
+      inner_ls <- lapply(seq_len(nSegsMinCpGs_int), burner_fun)
+      contiguousRegionsCpGs <- do.call(rbind, inner_ls)
+      
+    } 
 
-  colnames(contiguousRegionsCpGs) <- c("ProbeID","Subregion")
+  } 
+
+  colnames(contiguousRegionsCpGs) <- c("ProbeID", "Subregion")
 
   contiguousRegionsCpGs
 

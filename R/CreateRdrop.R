@@ -16,6 +16,7 @@
 #'   \item{\code{r_drop} : }{The correlation between each CpG with the sum of
 #'   the rest of the CpGs}
 #' }
+#' 
 #' @details An outlier CpG in a genomic region will typically have low
 #'   correlation with the rest of the CpGs in a genomic region. On the other
 #'   hand, in a cluster of co-methylated CpGs, we expect each CpG to have high

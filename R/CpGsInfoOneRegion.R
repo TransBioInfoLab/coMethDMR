@@ -1,20 +1,27 @@
-#' Test associations of individual CpGs in a genomic region with a continuous phenotype
+#' Test Associations Between a Region and Phenotype
+#' @description Test associations of individual CpGs in a genomic region with a
+#'   continuous phenotype
 #'
-#' @param regionName_char character string of location information for a genomic region, specified in
-#' the format of "chrxx:xxxxxx-xxxxxx"
-#' @param betas_df data frame of beta values with row names = CpG IDs, column names = sample IDs
-#' @param pheno_df a data frame with phenotype and covariate variables, with variable "Sample" for sample IDs.
-#' @param contPheno_char character string of the continuous phenotype, to be tested against methylation values
+#' @param regionName_char character string of location information for a genomic
+#'   region, specified in the format of \code{"chrxx:xxxxxx-xxxxxx"}
+#' @param betas_df data frame of beta values with row names = CpG IDs, column
+#'   names = sample IDs
+#' @param pheno_df a data frame with phenotype and covariate variables, with
+#'   variable "Sample" for sample IDs.
+#' @param contPheno_char character string of the continuous phenotype to be
+#'   tested against methylation values
 #' @param covariates_char character vector of covariate variables names
 #' @param arrayType Type of array, can be "450k" or "EPIC"
 #'
-#' @return a data frame with location of the genomic region (Region), CpG ID (cpg), chromosome (chr),
-#' position (pos), results for testing association of methylation in individual CpGs with
-#' continuous phenotype (slopeEstimate, slopePval) and annotations for the regions
+#' @return a data frame with location of the genomic region (Region), CpG ID
+#'   (cpg), chromosome (chr), position (pos), results for testing association of
+#'   methylation in individual CpGs with continuous phenotype (slopeEstimate,
+#'   slopePval) and annotations for the region.
 #'
 #' @details This function implements linear models that test association between
-#' methylation values in a genomic region with a continuous phenotype. Note that methylation M values
-#' are used as regression outcomes in these models. The model for each CpG is:
+#'   methylation values in a genomic region with a continuous phenotype. Note
+#'   that methylation M values are used as regression outcomes in these models.
+#'   The model for each CpG is:
 #'
 #'   \code{methylation M value ~ contPheno_char + covariates_char}
 #'
@@ -41,7 +48,7 @@ CpGsInfoOneRegion <- function(
   betas_df,
   pheno_df,
   contPheno_char,
-  covariates_char,
+  covariates_char = NULL,
   arrayType = c("450k","EPIC")
 ){
 
@@ -74,28 +81,26 @@ CpGsInfoOneRegion <- function(
   samplesToTest <- intersect(colnames(CpGsMvalue_df), rownames(pheno_df))
   phenoTest_df <- pheno_df[samplesToTest, ]
   CpGsMvalueTest_df <- CpGsMvalue_df[ ,samplesToTest]
-  #identical(rownames(phenoTest_df), colnames(CpGsMvalueTest_df))
 
   ### Run linear model for each CpG ###
-  if (!is.null(covariates_char)){
-    cov <- paste(covariates_char, collapse = "+")
-  }
-
-  ifelse(
-    is.null(covariates_char),
-
+  if (is.null(covariates_char)){
+    
     lmF <- function(Mvalue) {
       lmFormula <- as.formula(paste("Mvalue ~", contPheno_char))
       tmp = coef(summary(lm(lmFormula, data = phenoTest_df)))
       tmp[contPheno_char, c(1, 4)]
-    },
-
+    }
+    
+  } else {
+    
+    cov <- paste(covariates_char, collapse = "+")
     lmF <- function(Mvalue) {
       lmFormula <- as.formula(paste("Mvalue ~", contPheno_char, "+", cov))
-      tmp = coef(summary(lm(lmFormula, data = phenoTest_df)))
+      tmp <- coef(summary(lm(lmFormula, data = phenoTest_df)))
       tmp[contPheno_char, c(1, 4)]
     }
-  )
+    
+  }
 
   resultAllCpGs <- data.frame(t(apply(CpGsMvalueTest_df, 1, lmF)))
 
@@ -118,9 +123,10 @@ CpGsInfoOneRegion <- function(
   outDF$slopeEstimate <- round(outDF$slopeEstimate,4)
 
   ### Add annotations
-  CpGsAnno_df <- annotation_df[CpGsToTest_char ,
-                               c("UCSC_RefGene_Name", "UCSC_RefGene_Accession", "UCSC_RefGene_Group")]
-
+  CpGsAnno_df <- annotation_df[
+    CpGsToTest_char,
+    c("UCSC_RefGene_Name", "UCSC_RefGene_Accession", "UCSC_RefGene_Group")
+  ]
 
   outAnno_df <- merge(
     outDF,  CpGsAnno_df,
