@@ -66,7 +66,7 @@ CpGsInfoOneRegion <- function(
 
 
   ### Extract individual CpGs in the region ###
-  CpGsToTest_char <- GetCpGsInRegion(regionName_char, arrayType = "450k")
+  CpGsToTest_char <- GetCpGsInRegion(regionName_char, arrayType = arrayType)
 
   ### Transpose dnam from wide to long ###
   CpGsBeta_df <- betas_df[
