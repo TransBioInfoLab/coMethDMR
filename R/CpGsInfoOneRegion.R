@@ -4,6 +4,9 @@
 #'
 #' @param regionName_char character string of location information for a genomic
 #'   region, specified in the format of \code{"chrxx:xxxxxx-xxxxxx"}
+#' @param region_gr An object of class \code{\link[GenomicRanges]{GRanges}} with
+#'   location information for one region. If this argument is NULL, then the 
+#'   region in \code{regionName_char} is used.
 #' @param betas_df data frame of beta values with row names = CpG IDs, column
 #'   names = sample IDs
 #' @param pheno_df a data frame with phenotype and covariate variables, with
@@ -34,23 +37,27 @@
 #' @examples
 #'    data(betasChr22_df)
 #'    data(pheno_df)
+#'    myRegion_gr <- RegionsToRanges("chr22:18267969-18268249")
 #'
 #'    CpGsInfoOneRegion(
-#'      regionName_char = "chr22:19709548-19709755",
+#'      region_gr = myRegion_gr,
 #'      betas_df = betasChr22_df,
-#'      pheno_df, contPheno_char = "stage",
+#'      pheno_df = pheno_df,
+#'      contPheno_char = "stage",
 #'      covariates_char = c("age.brain", "sex"),
 #'      arrayType = "450k"
 #'    )
 #'
 CpGsInfoOneRegion <- function(
   regionName_char,
+  region_gr = NULL,
   betas_df,
   pheno_df,
   contPheno_char,
   covariates_char = NULL,
   arrayType = c("450k","EPIC")
 ){
+  # browser()
 
   arrayType <- match.arg(arrayType)
 
@@ -66,7 +73,14 @@ CpGsInfoOneRegion <- function(
 
 
   ### Extract individual CpGs in the region ###
-  CpGsToTest_char <- GetCpGsInRegion(regionName_char, arrayType = arrayType)
+  if (is.null(region_gr)) {
+    CpGsToTest_char <- GetCpGsInRegion(regionName_char, arrayType = arrayType)
+  } else {
+    CpGsToTest_char <- GetCpGsInRegion(
+      region_gr = region_gr, arrayType = arrayType
+    )
+    regionName_char <- as.character(region_gr)
+  }
 
   ### Transpose dnam from wide to long ###
   CpGsBeta_df <- betas_df[
@@ -117,10 +131,10 @@ CpGsInfoOneRegion <- function(
   outDF$slopePval <- ifelse (
     outDF$slopePval < 0.0001,
     formatC(outDF$slopePval, format = "e", digits = 3),
-    round(outDF$slopePval,4)
+    round(outDF$slopePval, 4)
   )
 
-  outDF$slopeEstimate <- round(outDF$slopeEstimate,4)
+  outDF$slopeEstimate <- round(outDF$slopeEstimate, 4)
 
   ### Add annotations
   CpGsAnno_df <- annotation_df[

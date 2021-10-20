@@ -6,6 +6,7 @@
 \usage{
 GetCpGsInRegion(
   regionName_char,
+  region_gr = NULL,
   genome = c("hg19", "hg38"),
   arrayType = c("450k", "EPIC")
 )
@@ -13,6 +14,10 @@ GetCpGsInRegion(
 \arguments{
 \item{regionName_char}{character string with location information for one
 region in the format \code{"chrxx:xxxxxx-xxxxxx"}}
+
+\item{region_gr}{An object of class \code{\link[GenomicRanges]{GRanges}} with
+location information for one region. If this argument is NULL, then the 
+region in \code{regionName_char} is used.}
 
 \item{genome}{human genome of reference hg19 (default) or hg38}
 
@@ -25,9 +30,13 @@ vector of CpG probe IDs mapped to the genomic region
 Extract probe IDs for CpGs located in a genomic region
 }
 \examples{
+   
+   myRegion_gr <- RegionsToRanges("chr22:18267969-18268249")
+   
    GetCpGsInRegion(
-     regionName_char = "chr22:18267969-18268249",
+     region_gr = myRegion_gr,
      genome = "hg19",
      arrayType = "450k"
    )
+   
 }

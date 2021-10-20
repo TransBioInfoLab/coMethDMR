@@ -6,6 +6,7 @@
 \usage{
 CpGsInfoAllRegions(
   AllRegionNames_char,
+  allRegions_gr = NULL,
   betas_df,
   pheno_df,
   contPheno_char,
@@ -17,6 +18,12 @@ CpGsInfoAllRegions(
 \item{AllRegionNames_char}{vector of character strings with location info for
 all the genomic regions. Each region should be specified in this format:
 \code{"chrxx:xxxxxx-xxxxxx"}}
+
+\item{allRegions_gr}{An object of class \code{\link[GenomicRanges]{GRanges}}
+with location information for the regions. If this argument is NULL, then
+the regions in \code{AllRegionNames_char} are used. If this argument is not
+NULL, then \code{region_gr} will overwrite any supplied ranges in 
+\code{AllRegionNames_char}.}
 
 \item{betas_df}{data frame of beta values for all genomic regions, with row
 names = CpG IDs amd column names = sample IDs}
@@ -53,7 +60,9 @@ Test associations of individual CpGs in multiple genomic regions
    CpGsInfoAllRegions(
      AllRegionNames_char,
      betas_df = betasChr22_df,
-     pheno_df, contPheno_char = "stage",
+     pheno_df = pheno_df,
+     contPheno_char = "stage",
      covariates_char = c("age.brain", "sex")
    )
+   
 }

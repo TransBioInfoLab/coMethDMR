@@ -6,6 +6,7 @@
 \usage{
 CpGsInfoOneRegion(
   regionName_char,
+  region_gr = NULL,
   betas_df,
   pheno_df,
   contPheno_char,
@@ -16,6 +17,10 @@ CpGsInfoOneRegion(
 \arguments{
 \item{regionName_char}{character string of location information for a genomic
 region, specified in the format of \code{"chrxx:xxxxxx-xxxxxx"}}
+
+\item{region_gr}{An object of class \code{\link[GenomicRanges]{GRanges}} with
+location information for one region. If this argument is NULL, then the 
+region in \code{regionName_char} is used.}
 
 \item{betas_df}{data frame of beta values with row names = CpG IDs, column
 names = sample IDs}
@@ -51,11 +56,13 @@ This function implements linear models that test association between
 \examples{
    data(betasChr22_df)
    data(pheno_df)
+   myRegion_gr <- RegionsToRanges("chr22:18267969-18268249")
 
    CpGsInfoOneRegion(
-     regionName_char = "chr22:19709548-19709755",
+     region_gr = myRegion_gr,
      betas_df = betasChr22_df,
-     pheno_df, contPheno_char = "stage",
+     pheno_df = pheno_df,
+     contPheno_char = "stage",
      covariates_char = c("age.brain", "sex"),
      arrayType = "450k"
    )

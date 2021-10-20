@@ -6,6 +6,11 @@
 #' @param AllRegionNames_char vector of character strings with location info for
 #'    all the genomic regions. Each region should be specified in this format:
 #'    \code{"chrxx:xxxxxx-xxxxxx"}
+#' @param allRegions_gr An object of class \code{\link[GenomicRanges]{GRanges}}
+#'   with location information for the regions. If this argument is NULL, then
+#'   the regions in \code{AllRegionNames_char} are used. If this argument is not
+#'   NULL, then \code{region_gr} will overwrite any supplied ranges in 
+#'   \code{AllRegionNames_char}.
 #' @param betas_df data frame of beta values for all genomic regions, with row
 #'    names = CpG IDs amd column names = sample IDs
 #' @param pheno_df a data frame with phenotype and covariate variables, with
@@ -34,18 +39,26 @@
 #'    CpGsInfoAllRegions(
 #'      AllRegionNames_char,
 #'      betas_df = betasChr22_df,
-#'      pheno_df, contPheno_char = "stage",
+#'      pheno_df = pheno_df,
+#'      contPheno_char = "stage",
 #'      covariates_char = c("age.brain", "sex")
 #'    )
-CpGsInfoAllRegions <- function(AllRegionNames_char, betas_df, pheno_df,
+#'    
+CpGsInfoAllRegions <- function(AllRegionNames_char,
+                               allRegions_gr = NULL,
+                               betas_df, pheno_df,
                                contPheno_char, covariates_char,
-                               arrayType = c("450k","EPIC")){
+                               arrayType = c("450k", "EPIC")){
 
   arrayType <- match.arg(arrayType)
+  if (!is.null(allRegions_gr)) {
+    AllRegionNames_char <- as.character(allRegions_gr)
+  }
 
   resultsAllRegions_ls <- lapply(
     AllRegionNames_char,
     FUN = CpGsInfoOneRegion,
+    region_gr = NULL,
     betas_df,
     pheno_df,
     contPheno_char,

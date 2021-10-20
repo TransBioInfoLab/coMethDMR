@@ -1,5 +1,10 @@
-# coMethDMR 0.99.8
+# coMethDMR 0.99.9
 We have been working on bug fixes and formatting/documentation changes as requested during the Bioconductor review. See these requests here: <https://github.com/Bioconductor/Contributions/issues/2064>
+
+## Breaking Changes
+
+- In the `CpGsInfoAllRegions()`, `CpGsInfoOneRegion()`, and `GetCpGsInRegion()` functions, note that we have added a new argument `region_gr` (in the second position) which allows for the input of a `GRanges` object to these functions. This will cause errors in existing code if that code uses positional argument matching. Any existing code that matches arguments by name will be unaffected.
+
 
 # coMethDMR 0.99.2
 

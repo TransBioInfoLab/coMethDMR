@@ -178,7 +178,8 @@ To further examine the significant regions, we can also extract individual CpG p
 outCpGs_df <- CpGsInfoOneRegion(
  regionName_char = "chr22:18268062-18268249",
  betas_df = betasChr22_df,
- pheno_df, contPheno_char = "stage",
+ pheno_df = pheno_df,
+ contPheno_char = "stage",
  covariates_char = NULL,
  arrayType = "450k"
 )
@@ -197,7 +198,8 @@ library("GenoGAM")
 CpGsInfoOneRegion(
   regionName_char = "chr22:19709548-19709755",
   betas_df = betasChr22_df,
-  pheno_df, contPheno_char = "stage",
+  pheno_df = pheno_df,
+  contPheno_char = "stage",
   covariates_char = NULL,
   arrayType = "450k"
 )
