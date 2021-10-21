@@ -11,6 +11,7 @@
 #' 
 #' @importFrom sesameData sesameDataCache sesameDataList
 #' @importFrom ExperimentHub ExperimentHub
+#' @importFrom dplyr %>%
 #'
 #' @details arguments are unused
 #' 
