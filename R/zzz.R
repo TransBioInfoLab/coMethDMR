@@ -23,8 +23,13 @@ NULL
   
   ###  Check if data has been cached  ###
   packageStartupMessage("Checking for cached SeSAMe data.")
-  ehNames450k_char <- grep(pattern = "HM450",x = names(sesameDataList()),value = T)
-  ehNamesEPIC_char <- grep(pattern = "EPIC",x = names(sesameDataList()),value = T)
+  platformInfo_char <- sesameData::sesameDataList()
+  ehNames450k_char  <- platformInfo_char[
+    c("HM450.hg19.manifest", "HM450.hg38.manifest")
+  ]
+  ehNamesEPIC_char  <- platformInfo_char[
+    c("EPIC.hg19.manifest", "EPIC.hg38.manifest")
+  ]
   cachedDataNames_char <- names(ExperimentHub::ExperimentHub(localHub = TRUE))
   
   all450k_lgl <- all(ehNames450k_char %in% cachedDataNames_char)
