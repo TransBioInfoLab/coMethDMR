@@ -24,12 +24,14 @@ NULL
   ###  Check if data has been cached  ###
   packageStartupMessage("Checking for cached SeSAMe data.")
   platformInfo_char <- sesameData::sesameDataList()
-  ehNames450k_char  <- platformInfo_char[
-    c("HM450.hg19.manifest", "HM450.hg38.manifest")
-  ]
-  ehNamesEPIC_char  <- platformInfo_char[
-    c("EPIC.hg19.manifest", "EPIC.hg38.manifest")
-  ]
+  ehNames450k_char  <- platformInfo_char %>% 
+    dplyr::filter(Title %in% c("HM450.hg19.manifest", "HM450.hg38.manifest")) %>% 
+    dplyr::pull(EHID)
+  
+  ehNamesEPIC_char  <- platformInfo_char %>% 
+    dplyr::filter(Title %in% c("HM450.hg19.manifest", "HM450.hg38.manifest")) %>% 
+    dplyr::pull(EHID)
+  
   cachedDataNames_char <- names(ExperimentHub::ExperimentHub(localHub = TRUE))
   
   all450k_lgl <- all(ehNames450k_char %in% cachedDataNames_char)
@@ -38,11 +40,11 @@ NULL
   ###  Download manifests as necessary  ###
   if(!all450k_lgl) {
     packageStartupMessage("Caching SeSAMe data for 450k arrays.")
-    sesameDataCache("HM450", showProgress = FALSE)
+    sesameDataCache("HM450",keyword = "manifest")
   }
   if(!allEPIC_lgl) {
     packageStartupMessage("Caching SeSAMe data for EPIC arrays.")
-    sesameDataCache("EPIC", showProgress = FALSE)
+    sesameDataCache("EPIC",keyword = "manifest")
   }
   
   invisible()
