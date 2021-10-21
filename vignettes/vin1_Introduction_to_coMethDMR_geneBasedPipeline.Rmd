@@ -48,6 +48,7 @@ If you are running the `coMethDMR` package for the first time, you will also nee
 
 ## Datasets
 
+### Example Methylation Data
 The input of `coMethDMR` are methylation beta values. We assume quality control and normalization of the methylation dataset have been performed, by R packages such as `minfi` or `RnBeads`. For illustration, we use a subset of prefrontal cortex methylation data (GEO GSE59685) from a recent Alzheimer's disease epigenome-wide association study which was described in Lunnon et al. (2014). This example dataset contains beta values for 8552 CpGs on chromosome 22 for a random selection of 20 subjects. 
 
 
@@ -56,6 +57,21 @@ data(betasChr22_df)
 betasChr22_df[1:5, 1:5]
 ```
 
+If you have used either the [minfi](https://bioconductor.org/packages/release/bioc/vignettes/minfi/inst/doc/minfi.html) or [RnBeads](https://bioconductor.org/packages/release/bioc/vignettes/RnBeads/inst/doc/RnBeads.pdf) packages to pre-process your methylation data, we now show a quick example of the code necessary to create a methylation data frame similar to `betasChr22_df` above (note that `dataObject_minfi` and `dataObject_RnBeads` are objects containing the pre-processed DNA methylation data as returned by the `minfi::` or `RnBeads::` packages, respectively):
+
+```
+###  minfi  ###
+betas_df <- as.data.frame(
+  minfi::getMethSignal(dataObject_minfi, what = "Beta")
+)
+
+###  RnBeads  ###
+betas_df <- as.data.frame(
+  RnBeads::meth(dataObject_RnBeads, row.names = TRUE)
+)
+```
+
+### Example Response Data
 The corresponding phenotype dataset included variables `stage` (Braak AD stage), `subject.id`, `slide` (batch effect), `Sex`, `Sample` and `age.brain` (age of the brain donor). Please note the phenotype file needs to have a variable called "Sample" that will be used by coMethDMR to link to the methylation dataset. 
 
 ```{r}
