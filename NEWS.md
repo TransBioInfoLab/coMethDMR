@@ -1,3 +1,4 @@
+test
 # coMethDMR 0.99.9
 We have been working on bug fixes and formatting/documentation changes as requested during the Bioconductor review. See these requests here: <https://github.com/Bioconductor/Contributions/issues/2064>
 
