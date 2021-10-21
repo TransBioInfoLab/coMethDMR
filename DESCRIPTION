@@ -24,7 +24,7 @@ Depends:
 License: GPL-3
 Encoding: UTF-8
 LazyData: false
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Imports:
   BiocParallel,
   bumphunter,

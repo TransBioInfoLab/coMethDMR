@@ -9,7 +9,7 @@
 #' @param libname path to package library
 #' @param pkgname package name
 #' 
-#' @importFrom sesameData sesameDataCache
+#' @importFrom sesameData sesameDataCache sesameDataList
 #' @importFrom ExperimentHub ExperimentHub
 #'
 #' @details arguments are unused
@@ -23,14 +23,12 @@ NULL
   
   ###  Check if data has been cached  ###
   packageStartupMessage("Checking for cached SeSAMe data.")
-  platformInfo_ls  <- sesameData:::"platform2eh_ids"
-  ehNames450k_char <- platformInfo_ls[["HM450"]]
-  ehNamesEPIC_char <- platformInfo_ls[["EPIC"]]
+  ehNames450k_char <- grep(pattern = "HM450",x = names(sesameDataList()),value = T)
+  ehNamesEPIC_char <- grep(pattern = "EPIC",x = names(sesameDataList()),value = T)
   cachedDataNames_char <- names(ExperimentHub::ExperimentHub(localHub = TRUE))
   
   all450k_lgl <- all(ehNames450k_char %in% cachedDataNames_char)
   allEPIC_lgl <- all(ehNamesEPIC_char %in% cachedDataNames_char)
-  
   
   ###  Download manifests as necessary  ###
   if(!all450k_lgl) {
