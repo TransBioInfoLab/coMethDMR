@@ -22,6 +22,21 @@ After installation, the coMethDMR package can be loaded into R using:
 library(coMethDMR)
 ```
 
+### Install Errors
+You may get the following error during installation:
+```
+Error: package or namespace load failed for 'coMethDMR':
+ .onLoad failed in loadNamespace() for 'coMethDMR', details:
+  call: .updateHubDB(hub_bfc, .class, url, proxy, localHub)
+  error: Invalid Cache: sqlite file
+  Hub has not been added to cache
+  Run again with 'localHub=FALSE'
+Error: loading failed
+```
+
+If so, please fix this by running `ExperimentHub::ExperimentHub()` first (and type `yes` if you receive a prompt to create a local cache for your data), then re-installing the package.
+
+
 ## Manual
 
 The reference manual for coMethDMR can be downloaded from old repository https://github.com/TransBioInfoLab/coMethDMR_old/tree/master/docs/coMethDMR_0.0.0.9001.pdf. Two vignettes are available in the same directory: "1_Introduction_coMethDMR_10-9-2019.pdf" and "2_BiocParallel_for_coMethDMR_geneBasedPipeline.pdf"
