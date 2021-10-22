@@ -85,6 +85,9 @@ WriteCloseByAllRegions <- function(
   
   ### Convert input from GRanges to list of vectors of CpGs ###
   hits <- as.data.frame( findOverlaps(regions, CpGlocations.gr) )
+  # NOTE 2021-10-22: we need to re-write this line to remove the dplyr
+  #   dependency. This is the only place in the whole package where we import
+  #   dplyr or plyr functions.
   hits <- dplyr::filter(
     dplyr::group_by(hits, .data$queryHits),
     dplyr::n() >= 3
