@@ -44,11 +44,11 @@ NULL
   ###  Download manifests as necessary  ###
   if(!all450k_lgl) {
     packageStartupMessage("Caching SeSAMe data for 450k arrays.")
-    sesameDataCache("HM450", keyword = "manifest")
+    sesameDataCache("HM450")
   }
   if(!allEPIC_lgl) {
     packageStartupMessage("Caching SeSAMe data for EPIC arrays.")
-    sesameDataCache("EPIC", keyword = "manifest")
+    sesameDataCache("EPIC")
   }
   
   invisible()
