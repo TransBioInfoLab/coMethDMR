@@ -255,9 +255,9 @@ Vignette # 2 illustrates how to leverage parallel computing via `BiocParallel` R
 Before identifying co-methylated clusters, we recommend removing uninteresting technical and biological effects, so that the resulting co-methylated clusters are only driven by the biological factors we are interested in. This can be accomplished using the `GetResiduals` function. 
 
 For example, the following script computes residuals from linear model 
-`Mvalues ~ age.brain + sex + slide`
+`Mvalues ~ age.brain + sex + slide` (note that we use only a subset of the Chromosome 22 CpG islands for computing time consideration).
 
-```{r reduce_data, include = FALSE}
+```{r reduce_data}
 Cgi_ls <- readRDS(
   system.file(
     "extdata",
@@ -381,7 +381,7 @@ If we don't want to adjust for any covariate effect, we can set `covariates_char
 
 Finally, we demonstrate `coMethDMR` analysis for a particular gene, for example the `ARFGAP3` gene. 
 
-```{R, include = FALSE}
+```{r}
 data(betasChr22_df)
 ```
 
