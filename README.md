@@ -39,7 +39,7 @@ If so, please fix this by running `ExperimentHub::ExperimentHub()` first (and ty
 
 ## Manual
 
-The reference manual for coMethDMR can be downloaded from old repository: <https://github.com/TransBioInfoLab/coMethDMR_old/tree/master/docs/>. The reference manual is "coMethDMR_0.0.0.9001.pdf". Two vignettes are available in the same directory: "1_Introduction_coMethDMR_10-9-2019.pdf" and "2_BiocParallel_for_coMethDMR_geneBasedPipeline.pdf"
+The reference manual for coMethDMR can be downloaded from old repository: <https://github.com/TransBioInfoLab/coMethDMR_old/tree/master/docs/>. The reference manual is [coMethDMR_0.0.0.9001.pdf](https://github.com/TransBioInfoLab/coMethDMR_old/blob/master/docs/coMethDMR_0.0.0.9001.pdf). Two vignettes are available in the same directory: [1_Introduction_coMethDMR_10-9-2019.pdf](https://github.com/TransBioInfoLab/coMethDMR_old/blob/master/docs/1_Introduction_coMethDMR_10-9-2019.pdf) and [2_BiocParallel_for_coMethDMR_geneBasedPipeline.pdf](https://github.com/TransBioInfoLab/coMethDMR_old/blob/master/docs/2_BiocParallel_for_coMethDMR_geneBasedPipeline.pdf).
 
 ## Frequently Asked Questions
 
