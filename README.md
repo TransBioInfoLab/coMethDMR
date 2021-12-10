@@ -10,7 +10,20 @@ between CpG sites within the region and differential methylation simultaneously.
 
 ## Installation
 
-The latest version can be installed by
+The latest stable release version can be installed by
+
+```{r eval=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+# The following initializes usage of Bioc devel
+BiocManager::install(version='devel')
+
+BiocManager::install("coMethDMR")
+```
+
+
+The development version can be installed by:
 
 ```{r eval=FALSE, message=FALSE, warning=FALSE, results='hide'}
 library(devtools)
