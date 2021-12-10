@@ -89,7 +89,7 @@ GetResiduals <- function(
 
   } else {
     
-    message("Phenotype data is not in the same order as methylation data. We will use column Sample in phenotype data to put these two files in the same order.")
+    message("Phenotype data is not in the same order as methylation data. We used column Sample in phenotype data to put these two files in the same order.")
     intersectSample <- intersect(colnames(value_df), pheno_df$Sample)
 
     ### Select samples of pheno_df based on intersect samples
