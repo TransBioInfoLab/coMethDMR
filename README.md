@@ -10,7 +10,7 @@ between CpG sites within the region and differential methylation simultaneously.
 
 ## Installation
 
-The latest stable release version can be installed by
+coMethDMR is now available from Bioconductor repository https://www.bioconductor.org/packages/devel/bioc/html/coMethDMR.html. The latest stable release version can be installed by
 
 ```{r eval=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (!requireNamespace("BiocManager", quietly = TRUE))
