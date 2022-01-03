@@ -12,6 +12,7 @@
 #'    coefficient mixed model or \code{simple} for simple linear mixed model.
 #' @param genome Human genome of reference: hg19 or hg38
 #' @param arrayType Type of array: "450k" or "EPIC"
+#' @param ignoreStrand Whether strand can be ignored, default is TRUE
 #' @param outLogFile Name of log file for messages of mixed model analysis
 #'
 #' @return  A dataframe with one row for association result of one region and 
@@ -61,7 +62,8 @@
 #'     contPheno_char = "stage",
 #'     covariates_char = c("age.brain", "sex"),
 #'     modelType = "randCoef",
-#'     arrayType = "450k"
+#'     arrayType = "450k", 
+#'     ignoreStrand = TRUE
 #'   )
 #'
 
@@ -69,6 +71,7 @@ lmmTest <- function(betaOne_df, pheno_df, contPheno_char, covariates_char,
                     modelType = c("randCoef", "simple"),
                     genome = c("hg19", "hg38"),
                     arrayType = c("450k", "EPIC"),
+                    ignoreStrand = TRUE,
                     outLogFile = NULL){
   # browser()
 
@@ -98,7 +101,7 @@ lmmTest <- function(betaOne_df, pheno_df, contPheno_char, covariates_char,
   # regionNames
   regionName <- NameRegion(
     OrderCpGsByLocation(
-      betaOne_df$ProbeID, genome, arrayType, output = "dataframe"
+      betaOne_df$ProbeID, genome, arrayType, ignoreStrand, output = "dataframe"
     )
   )
 
