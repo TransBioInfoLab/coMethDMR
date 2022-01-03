@@ -5,8 +5,9 @@
 #' @param region_gr An object of class \code{\link[GenomicRanges]{GRanges}} with
 #'   location information for one region. If this argument is NULL, then the 
 #'   region in \code{regionName_char} is used.
-#' @param arrayType Type of array, 450k or EPIC
 #' @param genome human genome of reference hg19 (default) or hg38
+#' @param arrayType Type of array, 450k or EPIC
+#' @param ignoreStrand Whether strand can be ignored, default is TRUE
 #'
 #' @return vector of CpG probe IDs mapped to the genomic region
 #' 
@@ -22,14 +23,16 @@
 #'    GetCpGsInRegion(
 #'      region_gr = myRegion_gr,
 #'      genome = "hg19",
-#'      arrayType = "450k"
+#'      arrayType = "450k",
+#'      ignoreStrand = TRUE
 #'    )
 #'    
 GetCpGsInRegion <- function(
   regionName_char,
   region_gr = NULL,
   genome = c("hg19", "hg38"),
-  arrayType = c("450k", "EPIC")
+  arrayType = c("450k", "EPIC"),
+  ignoreStrand = TRUE
 ){
 
   arrayType <- match.arg(arrayType)
@@ -58,6 +61,7 @@ GetCpGsInRegion <- function(
     names(CpGlocations.gr),
     genome = genome,
     arrayType = arrayType,
+    ignoreStrand = ignoreStrand,
     output = "vector"
   )
   
