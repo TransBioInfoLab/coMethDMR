@@ -10,19 +10,29 @@ between CpG sites within the region and differential methylation simultaneously.
 
 ## Installation
 
-coMethDMR can be installed by
+### Bioconductor Version
+The `coMethDMR::` package has been accepted to the [Bioconductor](https://bioconductor.org/) repository of R packages. It will be included in version 3.15 (April 2022 release). To install [this version](https://www.bioconductor.org/packages/devel/bioc/html/coMethDMR.html), please use the following code:
+```
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+# The following initializes usage of Bioc devel
+BiocManager::install(version='devel')
+
+BiocManager::install("coMethDMR")
+```
+
+### Development Version
+The development version of `coMethDMR::` can also be installed from this GitHub repository by
 
 ```{r eval=FALSE, message=FALSE, warning=FALSE, results='hide'}
 library(devtools)
 install_github("TransBioInfoLab/coMethDMR")
 ```
-After installation, the coMethDMR package can be loaded into R using:
 
-```{r eval=TRUE, message=FALSE, warning=FALSE, results='hide'}
-library(coMethDMR)
-```
+Please note that using compiled code from GitHub may require your computer to have additional software ([Rtools](https://cran.r-project.org/bin/windows/Rtools/rtools40.html) for Windows or [Xcode](https://developer.apple.com/xcode/) for Mac). Also note that installing this development version may result in some errors. We have outlined potential troubleshooting steps below.
 
-### Install Errors
+#### Install Errors: Cache
 You may get the following error during installation:
 ```
 Error: package or namespace load failed for 'coMethDMR':
@@ -34,7 +44,31 @@ Error: package or namespace load failed for 'coMethDMR':
 Error: loading failed
 ```
 
-If so, please fix this by running `ExperimentHub::ExperimentHub()` first (and type `yes` if you receive a prompt to create a local cache for your data), then re-installing the package.
+If so, please fix this by running `ExperimentHub::ExperimentHub()` first (and type `yes` if you receive a prompt to create a local cache for your data), then re-installing the package. Please see this white paper for more information: <https://bioconductor.org/packages/devel/bioc/vignettes/AnnotationHub/inst/doc/TroubleshootingTheCache.html>.
+
+#### Install Errors: `.onLoad()` Failure
+You may also get this error during installation:
+```
+Error: package or namespace load failed for 'coMethDMR':
+ .onLoad failed in loadNamespace() for 'coMethDMR', details:
+  call: NULL
+  error: $ operator is invalid for atomic vectors
+```
+
+This error is caused by a version mismatch issue for the `sesameData::` (<https://bioconductor.org/packages/sesameData/>) package. We require `sesameData::` version 1.12 or higher. To fix this, you will need Biocdonductor version 3.14 or later. The following code will assist here:
+```
+BiocManager::install(version = "3.14")
+BiocManager::install("sesameData")
+```
+
+After successfully executing the above installation, you should be able to install `coMethDMR::` from GitHub like normal.
+
+### Loading the Package
+After installation, the coMethDMR package can be loaded into R using:
+
+```{r eval=TRUE, message=FALSE, warning=FALSE, results='hide'}
+library(coMethDMR)
+```
 
 
 ## Manual
