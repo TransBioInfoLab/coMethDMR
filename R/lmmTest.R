@@ -130,6 +130,7 @@ lmmTest <- function(betaOne_df, pheno_df, contPheno_char, covariates_char,
     ps_df <- data.frame(
       Estimate = NA_real_,
       StdErr = NA_real_,
+      Stat = NA_real_,
       pValue = 1
     )
 
