@@ -5,6 +5,7 @@
 #' @param regions GRanges of input genomic regions
 #' @param genome Human genome of reference: hg19 or hg38
 #' @param arrayType Type of array: "450k" or "EPIC"
+#' @param ignoreStrand Whether strand can be ignored, default is TRUE
 #' @param maxGap an integer, genomic locations within maxGap from each other
 #'    are placed into the same cluster
 #' @param minCpGs an integer, minimum number of CpGs for each resulting region
@@ -49,6 +50,7 @@ WriteCloseByAllRegions <- function(
   regions,
   genome = c("hg19","hg38"),
   arrayType = c("450k","EPIC"),
+  ignoreStrand = TRUE,
   maxGap = 200,
   minCpGs = 3,
   ...
@@ -116,6 +118,7 @@ WriteCloseByAllRegions <- function(
     FUN = OrderCpGsByLocation,
     genome,
     arrayType,
+    ignoreStrand,
     output = "dataframe"
   )
   

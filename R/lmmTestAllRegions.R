@@ -19,6 +19,7 @@
 #'   coefficient mixed model or \code{simple} for simple linear mixed model.
 #' @param genome Human genome of reference: hg19 or hg38
 #' @param arrayType Type of array: "450k" or "EPIC"
+#' @param ignoreStrand Whether strand can be ignored, default is TRUE
 #' @param outFile output .csv file with the results for the mixed model analysis
 #' @param outLogFile log file for mixed models analysis messages
 #' @param nCores_int Number of computing cores to be used when executing code
@@ -97,7 +98,8 @@
 #'      contPheno_char = "stage",
 #'      covariates_char = "age.brain",
 #'      modelType = "randCoef",
-#'      arrayType = "450k"
+#'      arrayType = "450k",
+#'      ignoreStrand = TRUE,
 #'      # generates a log file in the current directory
 #'      # outLogFile = paste0("lmmLog_", Sys.Date(), ".txt")
 #'    )
@@ -111,6 +113,7 @@ lmmTestAllRegions <- function(
   modelType = c("randCoef", "simple"),
   genome = c("hg19", "hg38"),
   arrayType = c("450k", "EPIC"),
+  ignoreStrand = TRUE,
   outFile = NULL,
   outLogFile = NULL,
   nCores_int = 1L,
@@ -174,6 +177,7 @@ lmmTestAllRegions <- function(
     modelType,
     genome,
     arrayType,
+    ignoreStrand,
     outLogFile
   )
 
