@@ -8,6 +8,7 @@ OrderCpGsByLocation(
   CpGs_char,
   genome = c("hg19", "hg38"),
   arrayType = c("450k", "EPIC"),
+  ignoreStrand = TRUE,
   output = c("vector", "dataframe")
 )
 }
@@ -17,6 +18,8 @@ OrderCpGsByLocation(
 \item{genome}{Human genome of reference: hg19 or hg38}
 
 \item{arrayType}{Type of array: 450k or EPIC}
+
+\item{ignoreStrand}{Whether strand can be ignored, default is TRUE}
 
 \item{output}{vector of CpGs or dataframe with CpGs, CHR, MAPINFO}
 }
@@ -34,6 +37,7 @@ Order CpGs by genomic location
    CpGs_char,
    genome = "hg19",
    arrayType = "450k",
+   ignoreStrand = TRUE,
    output = "dataframe"
  )
 

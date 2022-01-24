@@ -55,7 +55,8 @@ OrderCpGsByLocation <- function(
     )
   }
   CpGs.gr <- sort(
-    CpGlocations.gr[CpGs_char[goodCpGs_lgl], ignore.strand = ignoreStrand]
+    CpGlocations.gr[ CpGs_char[goodCpGs_lgl] ],
+    ignore.strand = ignoreStrand
   )
 
   ### Select and return output ###

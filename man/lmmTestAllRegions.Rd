@@ -13,6 +13,7 @@ lmmTestAllRegions(
   modelType = c("randCoef", "simple"),
   genome = c("hg19", "hg38"),
   arrayType = c("450k", "EPIC"),
+  ignoreStrand = TRUE,
   outFile = NULL,
   outLogFile = NULL,
   nCores_int = 1L,
@@ -43,6 +44,8 @@ coefficient mixed model or \code{simple} for simple linear mixed model.}
 \item{genome}{Human genome of reference: hg19 or hg38}
 
 \item{arrayType}{Type of array: "450k" or "EPIC"}
+
+\item{ignoreStrand}{Whether strand can be ignored, default is TRUE}
 
 \item{outFile}{output .csv file with the results for the mixed model analysis}
 
@@ -124,7 +127,8 @@ This function implements a mixed model to test association between
      contPheno_char = "stage",
      covariates_char = "age.brain",
      modelType = "randCoef",
-     arrayType = "450k"
+     arrayType = "450k",
+     ignoreStrand = TRUE,
      # generates a log file in the current directory
      # outLogFile = paste0("lmmLog_", Sys.Date(), ".txt")
    )

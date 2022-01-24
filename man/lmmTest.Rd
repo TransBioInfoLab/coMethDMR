@@ -12,6 +12,7 @@ lmmTest(
   modelType = c("randCoef", "simple"),
   genome = c("hg19", "hg38"),
   arrayType = c("450k", "EPIC"),
+  ignoreStrand = TRUE,
   outLogFile = NULL
 )
 }
@@ -34,6 +35,8 @@ coefficient mixed model or \code{simple} for simple linear mixed model.}
 \item{genome}{Human genome of reference: hg19 or hg38}
 
 \item{arrayType}{Type of array: "450k" or "EPIC"}
+
+\item{ignoreStrand}{Whether strand can be ignored, default is TRUE}
 
 \item{outLogFile}{Name of log file for messages of mixed model analysis}
 }
@@ -84,7 +87,8 @@ This function implements a mixed model to test association between
     contPheno_char = "stage",
     covariates_char = c("age.brain", "sex"),
     modelType = "randCoef",
-    arrayType = "450k"
+    arrayType = "450k", 
+    ignoreStrand = TRUE
   )
 
 }

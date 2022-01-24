@@ -8,7 +8,8 @@ GetCpGsInRegion(
   regionName_char,
   region_gr = NULL,
   genome = c("hg19", "hg38"),
-  arrayType = c("450k", "EPIC")
+  arrayType = c("450k", "EPIC"),
+  ignoreStrand = TRUE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ region in \code{regionName_char} is used.}
 \item{genome}{human genome of reference hg19 (default) or hg38}
 
 \item{arrayType}{Type of array, 450k or EPIC}
+
+\item{ignoreStrand}{Whether strand can be ignored, default is TRUE}
 }
 \value{
 vector of CpG probe IDs mapped to the genomic region
@@ -36,7 +39,8 @@ Extract probe IDs for CpGs located in a genomic region
    GetCpGsInRegion(
      region_gr = myRegion_gr,
      genome = "hg19",
-     arrayType = "450k"
+     arrayType = "450k",
+     ignoreStrand = TRUE
    )
    
 }

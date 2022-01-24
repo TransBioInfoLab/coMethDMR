@@ -114,7 +114,7 @@ dim(betasChr22small_df)
 ## Compute residuals
 This step removes uninteresting technical and biological effects using the `GetResiduals` function, so that the resulting co-methylated clusters are only driven by the biological factors we are interested in. Note that there may be an error with the parallel back-end (`1 parallel job did not deliver a result`); this has occurred rarely for us (and not consistently enough for us to create a reproducible example), but it goes away when we execute the code a second time. We then recommend that you test this with a smaller subset of your data first. If you are able to consistently replicate a parallel error, please submit a bug report: <https://github.com/TransBioInfoLab/coMethDMR/issues>.
 ```{r, results='hide'}
-resid_df <- GetResiduals(
+resid_mat <- GetResiduals(
   dnam = betasChr22small_df,
   # converts to Mvalues for fitting linear model
   betaToM = TRUE,  
@@ -134,7 +134,7 @@ Once we know how many cores we have available, we execute the `CoMethAllRegions(
 ```{r BiocParallel_Gene, message=FALSE}
 system.time(
   coMeth_ls <- CoMethAllRegions(
-    dnam = resid_df,
+    dnam = resid_mat,
     betaToM = FALSE,
     method = "spearman",
     arrayType = "450k",
