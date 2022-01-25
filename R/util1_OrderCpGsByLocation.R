@@ -11,7 +11,8 @@
 #'   
 #' @export
 #'
-#' @importFrom  sesameData sesameDataGet
+#' @importFrom sesameData sesameDataGet
+#' @importFrom GenomicRanges sort.GenomicRanges
 #'
 #' @examples
 #' 
@@ -54,7 +55,9 @@ OrderCpGsByLocation <- function(
       call. = FALSE
     )
   }
-  CpGs.gr <- sort(
+  # Snow workers can't find the sort() method for GRanges objects; see
+  #   https://github.com/TransBioInfoLab/coMethDMR/issues/13
+  CpGs.gr <- sort.GenomicRanges(
     CpGlocations.gr[ CpGs_char[goodCpGs_lgl] ],
     ignore.strand = ignoreStrand
   )
