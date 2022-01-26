@@ -10,6 +10,12 @@
 #'   should be converted to M values (ranging from (-Inf, Inf)). Note that if
 #'   beta values are the input to \code{dnam}, then \code{betaToM} should be set
 #'   to \code{TRUE}, otherwise \code{FALSE}.
+#' @param epsilon When transforming beta values to M values, what should be done
+#'   to values exactly equal to 0 or 1? The M value transformation would yield
+#'   \code{-Inf} or \code{Inf} which causes issues in the statistical model. We
+#'    thus replace all values exactly equal to 0 with 0 + \code{epsilon}, and
+#'    we replace all values exactly equal to 1 with 1 - \code{epsilon}. Defaults
+#'    to \code{epsilon = 1e-08}.
 #' @param pheno_df a data frame with phenotype and covariates, with variable
 #'   \code{Sample} indicating sample IDs.
 #' @param covariates_char character vector for names of the covariate variables
@@ -48,6 +54,7 @@
 GetResiduals <- function(
   dnam,
   betaToM = TRUE,
+  epsilon = 1e-08,
   pheno_df,
   covariates_char,
   nCores_int = 1L,
@@ -56,21 +63,30 @@ GetResiduals <- function(
   
   # browser()
 
-  if (is(dnam, "matrix")){
-    dnam_df = as.data.frame(dnam)
-  } else {
-    dnam_df = dnam
-  }
-
-
+  ###  Transform the Data  ###
   if (betaToM){
-    ### Compute M values
-    value_df <- log2(dnam_df / (1 - dnam_df))
+    # "Fudge" beta values in {0, 1} away from boundary before transformation
+    dnam[dnam == 0] <- 0 + epsilon
+    dnam[dnam == 1] <- 1 - epsilon
+    # Compute M values
+    value <- log2(dnam / (1 - dnam))
   } else {
-    value_df <- dnam_df
+    value <- dnam
+  }
+  
+  if (is(value, "matrix")){
+    value_df = as.data.frame(value)
+  } else {
+    value_df = value
   }
 
-  ### Select samples in both value_df and pheno_df
+  
+  ###  Wrangle the Data  ###
+  ## Create the formula
+  cov_char <- paste(covariates_char, collapse = " + ")
+  formula_char <- paste0("val ~ ", cov_char)
+  
+  ## Select samples in both value_df and pheno_df
   if(!"Sample" %in% colnames(pheno_df)) {
     message("Could not find sample column in the pheno_df.")
     return(NULL)
@@ -100,10 +116,8 @@ GetResiduals <- function(
 
   }
 
-  ### Create the formula
-  cov_char <- paste(covariates_char, collapse = " + ")
-  formula_char <- paste0("val ~ ", cov_char)
-
+  
+  ###  Parallel Work  ###
   cluster <- CreateParallelWorkers(nCores_int, ...)
 
   resid_ls <- bplapply(
@@ -124,7 +138,8 @@ GetResiduals <- function(
     BPPARAM = cluster
   )
   
-  ### Take residuals
+  
+  ###  Wrangle Results  ###
   resid_mat <- do.call(rbind, resid_ls)
   row.names(resid_mat) <- row.names(value_df)
 

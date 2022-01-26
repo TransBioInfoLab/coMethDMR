@@ -7,6 +7,7 @@
 GetResiduals(
   dnam,
   betaToM = TRUE,
+  epsilon = 1e-08,
   pheno_df,
   covariates_char,
   nCores_int = 1L,
@@ -22,6 +23,13 @@ data.}
 should be converted to M values (ranging from (-Inf, Inf)). Note that if
 beta values are the input to \code{dnam}, then \code{betaToM} should be set
 to \code{TRUE}, otherwise \code{FALSE}.}
+
+\item{epsilon}{When transforming beta values to M values, what should be done
+to values exactly equal to 0 or 1? The M value transformation would yield
+\code{-Inf} or \code{Inf} which causes issues in the statistical model. We
+ thus replace all values exactly equal to 0 with 0 + \code{epsilon}, and
+ we replace all values exactly equal to 1 with 1 - \code{epsilon}. Defaults
+ to \code{epsilon = 1e-08}.}
 
 \item{pheno_df}{a data frame with phenotype and covariates, with variable
 \code{Sample} indicating sample IDs.}

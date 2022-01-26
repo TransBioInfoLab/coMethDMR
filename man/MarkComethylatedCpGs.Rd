@@ -7,6 +7,7 @@
 MarkComethylatedCpGs(
   betaCluster_mat,
   betaToM = TRUE,
+  epsilon = 1e-08,
   rDropThresh_num = 0.4,
   method = c("pearson", "spearman"),
   use = "complete.obs"
@@ -20,6 +21,13 @@ genomic positions, this can be accomplished by the
 
 \item{betaToM}{indicates if beta values should be converted to M values
 before computing correlations. Defaults to TRUE.}
+
+\item{epsilon}{When transforming beta values to M values, what should be done
+to values exactly equal to 0 or 1? The M value transformation would yield
+\code{-Inf} or \code{Inf} which causes issues in the statistical model. We
+ thus replace all values exactly equal to 0 with 0 + \code{epsilon}, and
+ we replace all values exactly equal to 1 with 1 - \code{epsilon}. Defaults
+ to \code{epsilon = 1e-08}.}
 
 \item{rDropThresh_num}{threshold for minimum correlation between a cpg with
 the rest of the CpGs. Defaults to 0.4.}

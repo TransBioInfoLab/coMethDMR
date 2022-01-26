@@ -6,6 +6,12 @@
 #'   \code{OrderCpGbyLocation} function.
 #' @param betaToM indicates if beta values should be converted to M values
 #'   before computing correlations. Defaults to TRUE.
+#' @param epsilon When transforming beta values to M values, what should be done
+#'   to values exactly equal to 0 or 1? The M value transformation would yield
+#'   \code{-Inf} or \code{Inf} which causes issues in the statistical model. We
+#'    thus replace all values exactly equal to 0 with 0 + \code{epsilon}, and
+#'    we replace all values exactly equal to 1 with 1 - \code{epsilon}. Defaults
+#'    to \code{epsilon = 1e-08}.
 #' @param rDropThresh_num threshold for minimum correlation between a cpg with
 #'   the rest of the CpGs. Defaults to 0.4.
 #' @param method correlation method; can be "pearson" or "spearman"
@@ -42,13 +48,14 @@
 #'    
 MarkComethylatedCpGs <- function(betaCluster_mat,
                                  betaToM = TRUE,
+                                 epsilon = 1e-08,
                                  rDropThresh_num = 0.4,
                                  method = c("pearson", "spearman"),
                                  use = "complete.obs") {
 
   
   ### Calculate r_drop and Store CpGs ###
-  if (betaToM != "TRUE") {
+  if (!betaToM) {
     
     clusterRdrop_df <- CreateRdrop(
       data = betaCluster_mat, method = method, use = use
@@ -69,6 +76,11 @@ MarkComethylatedCpGs <- function(betaCluster_mat,
       )
     }
     
+    # "Fudge" beta values in {0, 1} away from boundary before transformation
+    betaCluster_mat[betaCluster_mat == 0] <- 0 + epsilon
+    betaCluster_mat[betaCluster_mat == 1] <- 1 - epsilon
+    
+    # Compute M values
     mvalues_mat <- log2(betaCluster_mat / (1 - betaCluster_mat))
     clusterRdrop_df <- CreateRdrop(
       data = mvalues_mat, method = method, use = use

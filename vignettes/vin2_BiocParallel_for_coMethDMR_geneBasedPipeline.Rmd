@@ -49,11 +49,24 @@ In Section 2, we give a brief re-introduction to the example data. In Section 3,
 
 
 # Example Dataset
-For illustration, we use a subset of prefrontal cortex methylation data (GEO GSE59685) described in Lunnon et al. (2014). This example dataset includes beta values for 8552 CpGs on chromosome 22 for a random selection of 20 subjects. We assume quality control and normalization of the methylation dataset have been performed by R packages such as **minfi** or **RnBeads**.
+For illustration, we use a subset of prefrontal cortex methylation data (GEO GSE59685) described in Lunnon et al. (2014). This example dataset includes beta values for 8552 CpGs on chromosome 22 for a random selection of 20 subjects. 
 ```{r ex_data}
 data(betasChr22_df)
+```
+
+We assume quality control and normalization of the methylation dataset have been performed by R packages such as **minfi** or **RnBeads**. Further, we assume that probes and samples with excessive missingness have been removed (this task can be completed by subsetting the original methylation data set with the probes and samples identified by the `MarkMissing()` function).
+```{r}
+# Purge any probes or samples with excessive missing values
+markCells_ls <- MarkMissing(dnaM_df = betasChr22_df)
+betasChr22_df <- betasChr22_df[
+  markCells_ls$keepProbes, 
+  markCells_ls$keepSamples
+]
+
+# Inspect
 betasChr22_df[1:5, 1:5]
 ```
+
 
 The corresponding phenotype dataset included variables `stage` (Braak AD stage), `subject.id`, `slide` (batch effect), `sex`, `Sample` and `age.brain` (age of the brain donor). 
 ```{r ex_pheno_data}
