@@ -74,9 +74,9 @@ AnnotateResults <- function(
         },
         "EPIC" = {
 
-            locations_df <- IlluminaHumanMethylationEPICanno.ilm10b2.hg19::Locations
-            UCSCinfo_df  <- IlluminaHumanMethylationEPICanno.ilm10b2.hg19::Other
-            IslandsUCSCinfo_df <- IlluminaHumanMethylationEPICanno.ilm10b2.hg19::Islands.UCSC
+            locations_df <- IlluminaHumanMethylationEPICanno.ilm10b4.hg19::Locations
+            UCSCinfo_df  <- IlluminaHumanMethylationEPICanno.ilm10b4.hg19::Other
+            IslandsUCSCinfo_df <- IlluminaHumanMethylationEPICanno.ilm10b4.hg19::Islands.UCSC
 
         }
     )

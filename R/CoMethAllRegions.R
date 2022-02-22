@@ -18,9 +18,11 @@
 #'    located closely to each other on the genome). This file can be generated
 #'    by the \code{\link{WriteCloseByAllRegions}} function.
 #' @param returnAllCpGs When there is not a contiguous comethylated region in
-#'    the inputting pre-defined region, \code{returnAllCpGs = 1} indicates
-#'    outputting all the CpGs in the input regions, while
-#'    \code{returnAllCpGs = 0} indicates not returning any CpG.
+#'    the inputting pre-defined region, \code{returnAllCpGs = TRUE} indicates
+#'    outputting all the CpGs in the input regions (regardless of statistical
+#'    significance), while \code{returnAllCpGs = FALSE} indicates not returning
+#'    any CpGs not contained in comethylated clusters. Defaults to \code{FALSE},
+#'    and we provide this option for debugging purposes only.
 #' @param output a character vector of CpGs or a dataframe of CpGs along with
 #'    rDrop info
 #' @param nCores_int Number of computing cores to be used when executing code

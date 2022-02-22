@@ -67,7 +67,7 @@ CpGsInfoOneRegion <- function(
       annotation_df = IlluminaHumanMethylation450kanno.ilmn12.hg19::Other
     },
     "EPIC" = {
-      annotation_df = IlluminaHumanMethylationEPICanno.ilm10b2.hg19::Other
+      annotation_df = IlluminaHumanMethylationEPICanno.ilm10b4.hg19::Other
     }
   )
 
