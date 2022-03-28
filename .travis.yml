@@ -1,4 +1,5 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+# Helpful tutorial: http://jtleek.com/protocols/travis_bioc_devel/
 
 language: r
 r:
@@ -6,7 +7,7 @@ r:
 sudo: true
 cache: packages
 bioc_required: true
-bioc_use_devel: false
+# bioc_use_devel: false
 warnings_are_errors: false
 
 r_check_args: '--ignore-vignettes --no-examples'
@@ -41,9 +42,8 @@ bioc_packages:
   - GenomicRanges
   - IRanges
   - sesameData
-  - GenoGAM
   - IlluminaHumanMethylation450kanno.ilmn12.hg19
-  - IlluminaHumanMethylationEPICanno.ilm10b2.hg19
+  - IlluminaHumanMethylationEPICanno.ilm10b4.hg19
   
 script:
   - |

@@ -207,7 +207,8 @@ outCpGs_df
 These CpGs mapped to intergenic regions, so there are no gene names associated with the probes. For genic regions such as `chr22:19709548-19709755`, we would have results such as the following:
 
 ```{r message = FALSE}
-library("GenoGAM")
+# library("GenoGAM")
+# NOTE 2022-03-28: what are we using this package for again?
 ```
 
 ```{r CpGsInfoOneRegion_2}
