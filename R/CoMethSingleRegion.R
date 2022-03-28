@@ -13,6 +13,10 @@
 #'    Only regions with more than \code{minCpGs} will be returned.
 #' @param genome Human genome of reference hg19 or hg38
 #' @param arrayType Type of array, can be "450k" or "EPIC"
+#' @param manifest_gr A GRanges object with the genome manifest (as returned by
+#'   \code{\link[ExperimentHub]{ExperimentHub}} or by
+#'   \code{\link{ImportSesameData}}). This function by default ignores this
+#'   argument in favour of the \code{genome} and \code{arrayType} arguments.
 #' @param returnAllCpGs When there is not a contiguous comethylated region in
 #'    the inputing pre-defined region, \code{returnAllCpGs = 1} indicates
 #'    outputting all the CpGs in the input region, while \code{returnAllCpGs = 0}
@@ -65,6 +69,7 @@ CoMethSingleRegion <- function(CpGs_char,
                                minCpGs = 3,
                                genome = c("hg19","hg38"),
                                arrayType = c("450k","EPIC"),
+                               manifest_gr = NULL,
                                returnAllCpGs = FALSE){
   # browser()
 
@@ -74,7 +79,7 @@ CoMethSingleRegion <- function(CpGs_char,
 
   ### Order CpGs by genomic location ###
   CpGsOrdered_df <- OrderCpGsByLocation(
-    CpGs_char, genome, arrayType, output = "dataframe"
+    CpGs_char, genome, arrayType, manifest_gr, output = "dataframe"
   )
 
   ### Extract beta matrix for the input CpGs ###
@@ -103,7 +108,7 @@ CoMethSingleRegion <- function(CpGs_char,
 
       ### Split CpG dataframe by Subregion ###
       keepContiguousCpGs_ls <- SplitCpGDFbyRegion(
-        keepContiguousCpGs_df, genome, arrayType, returnAllCpGs
+        keepContiguousCpGs_df, genome, arrayType, manifest_gr, returnAllCpGs
       )
 
       ### Create Output Data Frame  ###

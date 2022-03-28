@@ -3,6 +3,10 @@
 #' @param CpGs_char vector of CpGs
 #' @param genome Human genome of reference: hg19 or hg38
 #' @param arrayType Type of array: 450k or EPIC
+#' @param manifest_gr A GRanges object with the genome manifest (as returned by
+#'   \code{\link[ExperimentHub]{ExperimentHub}} or by
+#'   \code{\link{ImportSesameData}}). This function by default ignores this
+#'   argument in favour of the \code{genome} and \code{arrayType} arguments.
 #' @param ignoreStrand Whether strand can be ignored, default is TRUE
 #' @param output vector of CpGs or dataframe with CpGs, CHR, MAPINFO
 #'
@@ -11,7 +15,6 @@
 #'   
 #' @export
 #'
-#' @importFrom sesameData sesameDataGet
 #' @importFrom GenomicRanges sort.GenomicRanges
 #'
 #' @examples
@@ -29,25 +32,37 @@ OrderCpGsByLocation <- function(
   CpGs_char,
   genome = c("hg19", "hg38"),
   arrayType = c("450k", "EPIC"),
+  manifest_gr = NULL,
   ignoreStrand = TRUE,
   output = c("vector", "dataframe")
 ){
 
-  arrayType <- match.arg(arrayType)
-  genome <- match.arg(genome)
   output <- match.arg(output)
+  
+  
+  ###  The GRanges Object  ###
+  if(!is.null(manifest_gr)) {
+    CpGlocations.gr <- manifest_gr
+  } else {
+    
+    arrayType <- match.arg(arrayType)
+    genome <- match.arg(genome)
+    
+    # Available manifest files are
+    # "EPIC.hg19.manifest"  "EPIC.hg38.manifest"
+    # "HM27.hg19.manifest"  "HM27.hg38.manifest"
+    # "HM450.hg19.manifest" "HM450.hg38.manifest"
+    manifest <- paste(
+      switch(arrayType, "450k" = "HM450", "EPIC" = "EPIC"),
+      genome, "manifest",
+      sep = "."
+    )
+    CpGlocations.gr <- ImportSesameData(manifest)  
+    
+  }
+  
 
-  # Available manifest files are
-  # "EPIC.hg19.manifest"  "EPIC.hg38.manifest"
-  # "HM27.hg19.manifest"  "HM27.hg38.manifest"
-  # "HM450.hg19.manifest" "HM450.hg38.manifest"
-  manifest <- paste(
-    switch(arrayType, "450k" = "HM450", "EPIC" = "EPIC"),
-    genome, "manifest",
-    sep = "."
-  )
-  CpGlocations.gr <- sesameDataGet(manifest)
-
+  ###  Ordering  ###
   goodCpGs_lgl <- CpGs_char %in% names(CpGlocations.gr)
   if(all(!goodCpGs_lgl)) {
     stop(
@@ -61,6 +76,7 @@ OrderCpGsByLocation <- function(
     CpGlocations.gr[ CpGs_char[goodCpGs_lgl] ],
     ignore.strand = ignoreStrand
   )
+  
 
   ### Select and return output ###
   if (output == "dataframe") {

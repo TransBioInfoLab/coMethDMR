@@ -12,6 +12,10 @@
 #'    coefficient mixed model or \code{simple} for simple linear mixed model.
 #' @param genome Human genome of reference: hg19 or hg38
 #' @param arrayType Type of array: "450k" or "EPIC"
+#' @param manifest_gr A GRanges object with the genome manifest (as returned by
+#'   \code{\link[ExperimentHub]{ExperimentHub}} or by
+#'   \code{\link{ImportSesameData}}). This function by default ignores this
+#'   argument in favour of the \code{genome} and \code{arrayType} arguments.
 #' @param ignoreStrand Whether strand can be ignored, default is TRUE
 #' @param outLogFile Name of log file for messages of mixed model analysis
 #'
@@ -38,7 +42,7 @@
 #' @export
 #'
 #' @importFrom lmerTest lmer
-#' @importFrom stats pnorm
+#' @importFrom stats coef pnorm reshape
 #'
 #' @examples
 #'   data(betasChr22_df)
@@ -71,6 +75,7 @@ lmmTest <- function(betaOne_df, pheno_df, contPheno_char, covariates_char,
                     modelType = c("randCoef", "simple"),
                     genome = c("hg19", "hg38"),
                     arrayType = c("450k", "EPIC"),
+                    manifest_gr = NULL,
                     ignoreStrand = TRUE,
                     outLogFile = NULL){
   # browser()
@@ -101,7 +106,12 @@ lmmTest <- function(betaOne_df, pheno_df, contPheno_char, covariates_char,
   # regionNames
   regionName <- NameRegion(
     OrderCpGsByLocation(
-      betaOne_df$ProbeID, genome, arrayType, ignoreStrand, output = "dataframe"
+      CpGs_char = betaOne_df$ProbeID,
+      genome = genome,
+      arrayType = arrayType,
+      manifest_gr = manifest_gr,
+      ignoreStrand = ignoreStrand,
+      output = "dataframe"
     )
   )
 

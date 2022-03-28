@@ -3,6 +3,10 @@
 #' @param CpGs_char a list of CpG IDs
 #' @param genome Human genome of reference hg19 or hg38
 #' @param arrayType Type of array, 450k or EPIC
+#' @param manifest_gr A GRanges object with the genome manifest (as returned by
+#'   \code{\link[ExperimentHub]{ExperimentHub}} or by
+#'   \code{\link{ImportSesameData}}). This function by default ignores this
+#'   argument in favour of the \code{genome} and \code{arrayType} arguments.
 #' @param maxGap an integer, genomic locations within maxGap from each other
 #'    are placed into the same cluster
 #' @param minCpGs an integer, minimum number of CpGs for the resulting CpG
@@ -41,6 +45,7 @@ CloseBySingleRegion <- function(
   CpGs_char,
   genome = c("hg19", "hg38"),
   arrayType = c("450k", "EPIC"),
+  manifest_gr = NULL,
   maxGap = 200,
   minCpGs = 3
 ){
@@ -48,7 +53,7 @@ CloseBySingleRegion <- function(
   genome <- match.arg(genome)
   arrayType <- match.arg(arrayType)
   CpGsOrdered_df <- OrderCpGsByLocation(
-    CpGs_char, genome, arrayType, output = "dataframe"
+    CpGs_char, genome, arrayType, manifest_gr, output = "dataframe"
   )
 
   ### Find close by clusters ###

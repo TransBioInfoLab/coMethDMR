@@ -5,6 +5,10 @@
 #' @param regions GRanges of input genomic regions
 #' @param genome Human genome of reference: hg19 or hg38
 #' @param arrayType Type of array: "450k" or "EPIC"
+#' @param manifest_gr A GRanges object with the genome manifest (as returned by
+#'   \code{\link[ExperimentHub]{ExperimentHub}} or by
+#'   \code{\link{ImportSesameData}}). This function by default ignores this
+#'   argument in favour of the \code{genome} and \code{arrayType} arguments.
 #' @param ignoreStrand Whether strand can be ignored, default is TRUE
 #' @param maxGap an integer, genomic locations within maxGap from each other
 #'    are placed into the same cluster
@@ -50,12 +54,14 @@ WriteCloseByAllRegions <- function(
   regions,
   genome = c("hg19","hg38"),
   arrayType = c("450k","EPIC"),
+  manifest_gr = NULL,
   ignoreStrand = TRUE,
   maxGap = 200,
   minCpGs = 3,
   ...
 ){
 
+  ###  Check Inputs  ###
   if (maxGap == 200 & minCpGs == 3) {
     stop(
       "A file of close by CpGs for maxGap = 200 and minCpGs = 3 for genic and
@@ -74,16 +80,21 @@ WriteCloseByAllRegions <- function(
   arrayType <- match.arg(arrayType)
   genome <- match.arg(genome)
   
-  # Available manifest files are
-  # "EPIC.hg19.manifest"  "EPIC.hg38.manifest"
-  # "HM27.hg19.manifest"  "HM27.hg38.manifest"
-  # "HM450.hg19.manifest" "HM450.hg38.manifest"
-  manifest <- paste(
-    ifelse(arrayType == "450k","HM450","EPIC"),
-    genome, "manifest",
-    sep = "."
-  )
-  CpGlocations.gr <- sesameDataGet(manifest)
+  
+  ###  The GRanges Object  ###
+  if(!is.null(manifest_gr)) {
+    CpGlocations.gr <- manifest_gr
+  } else {
+    
+    manifest <- paste(
+      switch(arrayType, "450k" = "HM450", "EPIC" = "EPIC"),
+      genome, "manifest",
+      sep = "."
+    )
+    CpGlocations.gr <- ImportSesameData(manifest)  
+    
+  }
+  
   
   ### Convert input from GRanges to list of vectors of CpGs ###
   hits <- as.data.frame( findOverlaps(regions, CpGlocations.gr) )
@@ -118,6 +129,7 @@ WriteCloseByAllRegions <- function(
     FUN = OrderCpGsByLocation,
     genome,
     arrayType,
+    manifest_gr,
     ignoreStrand,
     output = "dataframe"
   )

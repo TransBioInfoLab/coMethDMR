@@ -177,6 +177,7 @@ lmmTestAllRegions <- function(
     modelType,
     genome,
     arrayType,
+    manifest_gr = NULL,
     ignoreStrand,
     outLogFile
   )
