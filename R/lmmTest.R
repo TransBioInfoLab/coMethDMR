@@ -80,11 +80,13 @@ lmmTest <- function(betaOne_df, pheno_df, contPheno_char, covariates_char,
                     outLogFile = NULL){
   # browser()
 
+  ###  Inputs  ###
   modelType <- match.arg(modelType)
   arrayType <- match.arg(arrayType)
   genome <- match.arg(genome)
 
-  ### Transpose betaOne_df from wide to long ###
+  
+  ###  Wrangle  ###
   betaOne_df$ProbeID <- row.names(betaOne_df)
   betaOneTransp_df <- reshape(
     betaOne_df,
@@ -95,15 +97,16 @@ lmmTest <- function(betaOne_df, pheno_df, contPheno_char, covariates_char,
     timevar = "Sample"
   )
 
-  ### Calculate M values ###
+  # Calculate M values
   betaOneTransp_df$Mvalue <- log2(
     betaOneTransp_df$beta / (1 - betaOneTransp_df$beta)
   )
 
-  ### Merge transposed beta matrix with phenotype ###
+  # Merge transposed beta matrix with phenotype
   betaOnePheno_df <- merge(betaOneTransp_df, pheno_df, by = "Sample")
 
-  # regionNames
+  
+  ###  Setup  ###
   regionName <- NameRegion(
     OrderCpGsByLocation(
       CpGs_char = betaOne_df$ProbeID,
@@ -114,17 +117,22 @@ lmmTest <- function(betaOne_df, pheno_df, contPheno_char, covariates_char,
       output = "dataframe"
     )
   )
-
-  modelFormula_char <- .MakeLmmFormula(
-    contPheno_char, covariates_char, modelType
-  )
-
+  
   if(!is.null(outLogFile)){
     cat(paste0("Analyzing region ", regionName, ". \n"))
   } else {
     message("Analyzing region ", regionName, ". \n")
   }
 
+  modelFormula_char <- .MakeLmmFormula(
+    contPheno_char = contPheno_char,
+    covariates_char = covariates_char,
+    modelType = modelType
+  )
+
+  
+  ###  Analysis  ###
+  # Run
   f <- tryCatch(
     {
       suppressMessages(
@@ -134,7 +142,7 @@ lmmTest <- function(betaOne_df, pheno_df, contPheno_char, covariates_char,
     error = function(e){NULL}
   )
 
-
+  # Check
   if(is.null(f)){
 
     ps_df <- data.frame(
@@ -170,21 +178,20 @@ lmmTest <- function(betaOne_df, pheno_df, contPheno_char, covariates_char,
 
   }
 
-  ### split regionName into chrom, start, end
+  
+  ###  Return  ###
+  # split regionName into chrom, start, end
   chrom <- sub(":.*",    "", regionName)
   range <- sub("c.*:",   "", regionName)
   start <- sub("-\\d*",  "", range)
   end   <- sub("\\d*.-", "", range)
 
-  ### Return results ###
+  # results
   nCpGs <- nrow(betaOne_df)
-  result <- cbind(
-    chrom, start, end, nCpGs,
-    ps_df,
+  cbind(
+    chrom, start, end, nCpGs, ps_df,
     stringsAsFactors = FALSE
   )
-
-  result
 
 }
 

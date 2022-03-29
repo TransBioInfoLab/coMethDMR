@@ -119,14 +119,22 @@ lmmTestAllRegions <- function(
   nCores_int = 1L,
   ...){
   # browser()
-
-  warnLvl <- options()$warn
-  options(warn = 1)
-
-  ###  Setup  ###
+  
+  
+  ###  Inputs  ###
   modelType <- match.arg(modelType)
-  arrayType <- match.arg(arrayType)
+  
+  # Available manifest files are: 
+  #   "EPIC.hg19.manifest"  "EPIC.hg38.manifest"
+  #   "HM450.hg19.manifest" "HM450.hg38.manifest"
   genome <- match.arg(genome)
+  arrayType <- match.arg(arrayType)
+  manifest <- paste(
+    switch(arrayType, "450k" = "HM450", "EPIC" = "EPIC"),
+    genome, "manifest",
+    sep = "."
+  )
+  CpGlocations.gr <- ImportSesameData(manifest)  
 
   if (is(betas, "matrix")){
     beta_df <- as.data.frame(betas)
@@ -141,6 +149,11 @@ lmmTestAllRegions <- function(
 
   CpGnames <- rownames(beta_df)
 
+  
+  ###  Setup Log File  ###
+  warnLvl <- options()$warn
+  options(warn = 1)
+  
   writeLog_logi <- !is.null(outLogFile)
   if(writeLog_logi){
 
@@ -158,13 +171,14 @@ lmmTestAllRegions <- function(
   }
 
 
-  ###  Split Data by Region  ###
+  ###  Run mixed model for all the contiguous comethylated regions  ###
+  # Split Data by Region
   coMethBetaDF_ls <- lapply(
     region_ls,
     function(x) beta_df[which(CpGnames %in% x), ]
   )
-
-  ###  Run mixed model for all the contiguous comethylated regions  ###
+  
+  # Apply
   cluster <- CreateParallelWorkers(nCores_int, ...)
 
   results_ls <- bplapply(
@@ -177,11 +191,14 @@ lmmTestAllRegions <- function(
     modelType,
     genome,
     arrayType,
-    manifest_gr = NULL,
+    manifest_gr = CpGlocations.gr,
     ignoreStrand,
     outLogFile
   )
 
+  
+  ###  Close Log File  ###
+  options(warn = warnLvl)
   if(writeLog_logi){
 
     cat("\n")
@@ -210,8 +227,7 @@ lmmTestAllRegions <- function(
   }
 
 
-
-  ### Output results ###
+  ###  Output results  ###
   if (length(results_ls) > 0){
 
     outDF <- do.call(rbind, results_ls)
@@ -220,13 +236,8 @@ lmmTestAllRegions <- function(
 
   }
 
-
-  options(warn = warnLvl)
-
   if (is.null(outFile)){
-
     outDF
-
   } else {
 
     message("writing results to ", outFile,".csv")
