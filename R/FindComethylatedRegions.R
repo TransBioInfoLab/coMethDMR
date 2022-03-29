@@ -28,15 +28,13 @@ FindComethylatedRegions <- function(CpGs_df, minCpGs_int = 3){
   # browser()
 
   ### Get contiguous regions of CpGs ###
-  contiguousRegion_ls <- getSegments(CpGs_df$keep, cutoff = 1)[["upIndex"]]
+  contiguousRegion_ls <- getSegments(x = CpGs_df$keep, cutoff = 1)[["upIndex"]]
   nSegs_int <- length(contiguousRegion_ls)
 
   if (nSegs_int == 0){
     
-    contiguousRegionsCpGs <- cbind(
-      as.data.frame(CpGs_df$CpG),
-      rep(0, length(CpGs_df$CpG))
-    )
+    contiguousRegionsCpGs <- CpGs_df["CpG"]
+    contiguousRegionsCpGs["Subregion"] <- 0
     
   } else {
 
@@ -50,10 +48,8 @@ FindComethylatedRegions <- function(CpGs_df, minCpGs_int = 3){
     ind <- NULL
     if (nSegsMinCpGs_int == 0){
       
-      contiguousRegionsCpGs <- cbind(
-        as.data.frame(CpGs_df$CpG),
-        rep(0, length(CpGs_df$CpG))
-      )
+      contiguousRegionsCpGs <- CpGs_df["CpG"]
+      contiguousRegionsCpGs["Subregion"] <- 0
       
     } else {
       

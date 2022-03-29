@@ -11,6 +11,7 @@ CoMethAllRegions(
   method = c("pearson", "spearman"),
   rDropThresh_num = 0.4,
   minCpGs = 3,
+  genome = c("hg19", "hg38"),
   arrayType = c("450k", "EPIC"),
   CpGs_ls,
   file = NULL,
@@ -35,6 +36,8 @@ of the rest of the CpGs}
 
 \item{minCpGs}{minimum number of CpGs to be considered a "region".
 Only regions with more than \code{minCpGs} will be returned.}
+
+\item{genome}{Human genome of reference hg19 or hg38}
 
 \item{arrayType}{Type of array, can be "450k" or "EPIC"}
 

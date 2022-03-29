@@ -11,6 +11,7 @@
 #'    of the rest of the CpGs
 #' @param minCpGs minimum number of CpGs to be considered a "region".
 #'    Only regions with more than \code{minCpGs} will be returned.
+#' @param genome Human genome of reference hg19 or hg38
 #' @param arrayType Type of array, can be "450k" or "EPIC"
 #' @param CpGs_ls list where each item is a character vector of CpGs IDs.
 #'    This should be CpG probes located closely on the array.
@@ -77,6 +78,7 @@ CoMethAllRegions <- function(
   method = c("pearson", "spearman"),
   rDropThresh_num = 0.4,
   minCpGs = 3,
+  genome = c("hg19","hg38"),
   arrayType = c("450k","EPIC"),
   CpGs_ls,
   file = NULL,
@@ -87,17 +89,33 @@ CoMethAllRegions <- function(
 ){
   # browser()
 
+  
+  ###  Inputs  ###
   method <- match.arg(method)
   arrayType <- match.arg(arrayType)
   output <- match.arg(output)
+  
+  # Available manifest files are: 
+  #   "EPIC.hg19.manifest"  "EPIC.hg38.manifest"
+  #   "HM450.hg19.manifest" "HM450.hg38.manifest"
+  genome <- match.arg(genome)
+  arrayType <- match.arg(arrayType)
+  manifest <- paste(
+    switch(arrayType, "450k" = "HM450", "EPIC" = "EPIC"),
+    genome, "manifest",
+    sep = "."
+  )
+  CpGlocations.gr <- ImportSesameData(manifest)  
 
-  ### Read file of close by CpGs ###
+  # Close by CpGs
   if(!is.null(CpGs_ls)) {
     closeByGenomicRegion_ls <- CpGs_ls
   } else {
     closeByGenomicRegion_ls <- readRDS(file)
   }
 
+  
+  ###  Apply  ###
   cluster <- CreateParallelWorkers(nCores_int, ...)
 
   coMethCpGsAllREgions_ls <- bplapply(
@@ -109,14 +127,16 @@ CoMethAllRegions <- function(
     rDropThresh_num = rDropThresh_num,
     minCpGs = minCpGs,
     method = method,
+    genome = genome,
     arrayType = arrayType,
+    manifest_gr = CpGlocations.gr,
     returnAllCpGs = returnAllCpGs
   )
 
   coMethCpGsAllREgions_ls <- unique(coMethCpGsAllREgions_ls)
 
 
-  ### return output ###
+  ###  return output  ###
   # Return list of contiguous comethylated CpGs by Regions
   if(output == "CpGs"){
 
