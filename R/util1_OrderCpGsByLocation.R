@@ -50,7 +50,6 @@ OrderCpGsByLocation <- function(
     
     # Available manifest files are
     # "EPIC.hg19.manifest"  "EPIC.hg38.manifest"
-    # "HM27.hg19.manifest"  "HM27.hg38.manifest"
     # "HM450.hg19.manifest" "HM450.hg38.manifest"
     manifest <- paste(
       switch(arrayType, "450k" = "HM450", "EPIC" = "EPIC"),
@@ -73,12 +72,12 @@ OrderCpGsByLocation <- function(
   # Snow workers can't find the sort() method for GRanges objects; see
   #   https://github.com/TransBioInfoLab/coMethDMR/issues/13
   CpGs.gr <- sort.GenomicRanges(
-    CpGlocations.gr[ CpGs_char[goodCpGs_lgl] ],
+    x = CpGlocations.gr[ CpGs_char[goodCpGs_lgl] ],
     ignore.strand = ignoreStrand
   )
   
 
-  ### Select and return output ###
+  ###  Select and return output  ###
   if (output == "dataframe") {
     
     CpGsOrdered_df <- as.data.frame(CpGs.gr)[ , c("seqnames", "start")]
@@ -89,4 +88,5 @@ OrderCpGsByLocation <- function(
   } else {
     as.character(names(CpGs.gr))
   }
+  
 }

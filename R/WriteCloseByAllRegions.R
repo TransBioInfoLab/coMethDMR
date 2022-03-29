@@ -5,10 +5,6 @@
 #' @param regions GRanges of input genomic regions
 #' @param genome Human genome of reference: hg19 or hg38
 #' @param arrayType Type of array: "450k" or "EPIC"
-#' @param manifest_gr A GRanges object with the genome manifest (as returned by
-#'   \code{\link[ExperimentHub]{ExperimentHub}} or by
-#'   \code{\link{ImportSesameData}}). This function by default ignores this
-#'   argument in favour of the \code{genome} and \code{arrayType} arguments.
 #' @param ignoreStrand Whether strand can be ignored, default is TRUE
 #' @param maxGap an integer, genomic locations within maxGap from each other
 #'    are placed into the same cluster
@@ -25,8 +21,6 @@
 #'
 #' @export
 #'
-#' @importFrom dplyr group_by filter n
-#' @importFrom rlang .data
 #' @importFrom GenomicRanges findOverlaps
 #' @importFrom methods is
 #' @examples
@@ -54,19 +48,20 @@ WriteCloseByAllRegions <- function(
   regions,
   genome = c("hg19","hg38"),
   arrayType = c("450k","EPIC"),
-  manifest_gr = NULL,
   ignoreStrand = TRUE,
   maxGap = 200,
   minCpGs = 3,
   ...
 ){
+  # browser()
 
   ###  Check Inputs  ###
   if (maxGap == 200 & minCpGs == 3) {
-    stop(
+    warning(
       "A file of close by CpGs for maxGap = 200 and minCpGs = 3 for genic and
-      intergenic regions already exist at /inst/extdata/",
-      call. = FALSE
+  intergenic regions already exists in /inst/extdata/ or at 
+  <https://github.com/TransBioInfoLab/coMethDMR_data/tree/main/data>",
+      call. = FALSE, immediate. = TRUE
     )
   }
   
@@ -77,77 +72,67 @@ WriteCloseByAllRegions <- function(
     )
   }
   
-  arrayType <- match.arg(arrayType)
-  genome <- match.arg(genome)
-  
   
   ###  The GRanges Object  ###
-  if(!is.null(manifest_gr)) {
-    CpGlocations.gr <- manifest_gr
-  } else {
-    
-    manifest <- paste(
-      switch(arrayType, "450k" = "HM450", "EPIC" = "EPIC"),
-      genome, "manifest",
-      sep = "."
-    )
-    CpGlocations.gr <- ImportSesameData(manifest)  
-    
-  }
-  
-  
-  ### Convert input from GRanges to list of vectors of CpGs ###
-  hits <- as.data.frame( findOverlaps(regions, CpGlocations.gr) )
-  # NOTE 2021-10-22: we need to re-write this line to remove the dplyr
-  #   dependency. This is the only place in the whole package where we import
-  #   dplyr or plyr functions.
-  hits <- dplyr::filter(
-    dplyr::group_by(hits, .data$queryHits),
-    dplyr::n() >= 3
+  arrayType <- match.arg(arrayType)
+  genome <- match.arg(genome)
+  manifest <- paste(
+    switch(arrayType, "450k" = "HM450", "EPIC" = "EPIC"),
+    genome, "manifest",
+    sep = "."
   )
-  hits$probes <- names(CpGlocations.gr)[hits$subjectHits]
-  region3CpGs_ls <- split(hits$probes, hits$queryHits)
+  CpGlocations.gr <- ImportSesameData(manifest)  
   
-  ### Find close by clusters in all the regions ###
-  ### 45.92571 secs for 1000 regions
+  
+  ###  Convert input from GRanges to list of vectors of CpGs  ###
+  hits_df <- as.data.frame(
+    findOverlaps(query = regions, subject = CpGlocations.gr)
+  )
+  hits_df$probes <- names(CpGlocations.gr)[hits_df$subjectHits]
+  regionCpGs_ls <- split(hits_df$probes, hits_df$queryHits)
+  regionCpGs_ls[lengths(regionCpGs_ls) < minCpGs] <- NULL
+  
+  
+  ###  Find close by clusters in all the regions  ###
+  # 45.92571 secs for 1000 regions
   closeByRegions_ls <- lapply(
-    X = region3CpGs_ls,
+    X = regionCpGs_ls,
     FUN = CloseBySingleRegion,
-    genome,
-    arrayType,
-    maxGap,
-    minCpGs
+    manifest_gr = CpGlocations.gr,
+    maxGap = maxGap,
+    minCpGs = minCpGs
   )
   
-  ### Remove 'NULL' elements of the list ###
+  # Remove 'NULL' elements of the list
   closeByRegionsNoNull_ls <- unlist(closeByRegions_ls, recursive = FALSE)
   
-  ### Order CpGs in each cluster by location to name the cluster ###
-  ### 8.202557 secs for 162 regions, after unlisting 1000 regions from previous step
+  
+  ###  Order CpGs in each cluster by location to name the cluster  ###
+  # 8.202557 secs for 162 regions, after unlisting 1000 regions
   closeByRegionsOrderedDF_ls <- lapply(
     X = closeByRegionsNoNull_ls,
     FUN = OrderCpGsByLocation,
-    genome,
-    arrayType,
-    manifest_gr,
-    ignoreStrand,
+    manifest_gr = CpGlocations.gr,
+    ignoreStrand = ignoreStrand,
     output = "dataframe"
   )
   
-  ### Name each cluster with genomic region ###
-  closeByRegionsNames_ls <- lapply(
-    closeByRegionsOrderedDF_ls, NameRegion
+  # Name each cluster with genomic region
+  closeByRegionsNames_char <- vapply(
+    closeByRegionsOrderedDF_ls,
+    FUN = NameRegion,
+    FUN.VALUE = character(1)
   )
   
-  ### Order CpGs in each cluster by location ###
+  
+  ###  Order CpGs in each cluster by location  ###
   closeByRegionsOrdered_ls <- lapply(
-    closeByRegionsOrderedDF_ls, function(x) x[ , "cpg"]
+    closeByRegionsOrderedDF_ls, FUN = `[[`, "cpg"
   )
+  names(closeByRegionsOrdered_ls) <- closeByRegionsNames_char
   
-  names(closeByRegionsOrdered_ls) <- closeByRegionsNames_ls
   
-  
-  ### Select and return output ###
+  ###  Select and return output  ###
   message("Writing to file ", fileName)
   saveRDS(closeByRegionsOrdered_ls, fileName)
 

@@ -55,17 +55,17 @@ SplitCpGDFbyRegion <- function(
     CpGsSubregions_df$ProbeID, CpGsSubregions_df$Subregion
   )
   
-  # Output dataframes with annotation for each subregions
+  # Order each subregion
   subRegionAnnotationDF_ls <- lapply(
     X = subRegion_ls,
     FUN = OrderCpGsByLocation,
-    genome,
-    arrayType,
-    manifest_gr,
+    genome = genome,
+    arrayType = arrayType,
+    manifest_gr = manifest_gr,
     output = "dataframe"
   )
   
-  ### Name the comethylated subregions ###
+  # Name the comethylated subregions
   names(subRegion_ls) <- lapply(subRegionAnnotationDF_ls, NameRegion)
   
   subRegion_ls

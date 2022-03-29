@@ -1,7 +1,7 @@
 Package: coMethDMR
 Title: Accurate identification of co-methylated and differentially methylated
   regions in epigenome-wide association studies
-Version: 0.99.15
+Version: 0.99.16
 Authors@R: c(
   person("Fernanda", "Veitzman", email = "fveit001@fiu.edu", role = c("cre")),
   person("Lissette", "Gomez", email = "lxg255@miami.edu", role = c("aut")),
@@ -30,13 +30,11 @@ Imports:
   AnnotationHub,
   BiocParallel,
   bumphunter,
-  dplyr,
   ExperimentHub,
   GenomicRanges,
   IRanges,
   lmerTest,
   methods,
-  rlang,
   stats,
   utils
 Suggests: 
