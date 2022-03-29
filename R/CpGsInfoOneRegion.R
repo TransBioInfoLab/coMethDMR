@@ -14,7 +14,12 @@
 #' @param contPheno_char character string of the continuous phenotype to be
 #'   tested against methylation values
 #' @param covariates_char character vector of covariate variables names
+#' @param genome human genome of reference hg19 (default) or hg38
 #' @param arrayType Type of array, can be "450k" or "EPIC"
+#' @param manifest_gr A GRanges object with the genome manifest (as returned by
+#'   \code{\link[ExperimentHub]{ExperimentHub}} or by
+#'   \code{\link{ImportSesameData}}). This function by default ignores this
+#'   argument in favour of the \code{genome} and \code{arrayType} arguments.
 #'
 #' @return a data frame with location of the genomic region (Region), CpG ID
 #'   (cpg), chromosome (chr), position (pos), results for testing association of
@@ -55,10 +60,15 @@ CpGsInfoOneRegion <- function(
   pheno_df,
   contPheno_char,
   covariates_char = NULL,
-  arrayType = c("450k","EPIC")
+  genome = c("hg19", "hg38"),
+  arrayType = c("450k", "EPIC"),
+  manifest_gr = NULL
 ){
   # browser()
 
+  
+  ###  Inputs  ###
+  genome <- match.arg(genome)
   arrayType <- match.arg(arrayType)
 
   switch(
@@ -74,29 +84,39 @@ CpGsInfoOneRegion <- function(
 
   ### Extract individual CpGs in the region ###
   if (is.null(region_gr)) {
-    CpGsToTest_char <- GetCpGsInRegion(regionName_char, arrayType = arrayType)
-  } else {
+    
     CpGsToTest_char <- GetCpGsInRegion(
-      region_gr = region_gr, arrayType = arrayType
+      regionName_char = regionName_char,
+      genome = genome,
+      arrayType = arrayType, 
+      manifest_gr = manifest_gr
+    )
+    
+  } else {
+    
+    CpGsToTest_char <- GetCpGsInRegion(
+      region_gr = region_gr,
+      genome = genome,
+      arrayType = arrayType, 
+      manifest_gr = manifest_gr
     )
     regionName_char <- as.character(region_gr)
+    
   }
 
-  ### Transpose dnam from wide to long ###
-  CpGsBeta_df <- betas_df[
-    which(rownames(betas_df) %in% CpGsToTest_char),
-  ]
-
-  ### Calculate M values ###
+  
+  ###  Wrangle and Tidy Data  ###
+  CpGsBeta_df <- betas_df[rownames(betas_df) %in% CpGsToTest_char, ]
   CpGsMvalue_df <- log2(CpGsBeta_df / (1 - CpGsBeta_df))
 
-  ### Match samples to test in pheno and beta data frames ###
+  # Match samples to test in pheno and beta data frames
   rownames(pheno_df) <- pheno_df$Sample
   samplesToTest <- intersect(colnames(CpGsMvalue_df), rownames(pheno_df))
   phenoTest_df <- pheno_df[samplesToTest, ]
-  CpGsMvalueTest_df <- CpGsMvalue_df[ ,samplesToTest]
+  CpGsMvalueTest_df <- CpGsMvalue_df[ , samplesToTest]
 
-  ### Run linear model for each CpG ###
+  
+  ###  Function to run linear model for each CpG  ###
   if (is.null(covariates_char)){
     
     lmF <- function(Mvalue) {
@@ -116,13 +136,23 @@ CpGsInfoOneRegion <- function(
     
   }
 
-  resultAllCpGs <- data.frame(t(apply(CpGsMvalueTest_df, 1, lmF)))
-
-  ### Return results ###
-  colnames(resultAllCpGs) <- c("slopeEstimate", "slopePval")
-  CpGsLocation <- OrderCpGsByLocation(
-    CpGs_char = CpGsToTest_char, arrayType = arrayType, output = "dataframe"
+  
+  ###  Run the Models  ###
+  resultAllCpGs <- data.frame(
+    t( apply(CpGsMvalueTest_df, 1, lmF) )
   )
+  colnames(resultAllCpGs) <- c("slopeEstimate", "slopePval")
+  
+
+  ###  Wrangle results  ###
+  CpGsLocation <- OrderCpGsByLocation(
+    CpGs_char = CpGsToTest_char,
+    genome = genome,
+    arrayType = arrayType,
+    manifest_gr = manifest_gr,
+    output = "dataframe"
+  )
+  
   outDF <- merge(
     CpGsLocation, resultAllCpGs,
     by.x = "cpg", by.y = "row.names", sort = FALSE
@@ -136,14 +166,15 @@ CpGsInfoOneRegion <- function(
 
   outDF$slopeEstimate <- round(outDF$slopeEstimate, 4)
 
-  ### Add annotations
+  
+  ###  Add Annotations and Return  ###
   CpGsAnno_df <- annotation_df[
     CpGsToTest_char,
     c("UCSC_RefGene_Name", "UCSC_RefGene_Accession", "UCSC_RefGene_Group")
   ]
 
   outAnno_df <- merge(
-    outDF,  CpGsAnno_df,
+    outDF, CpGsAnno_df,
     by.x = "cpg", by.y = "row.names", sort = FALSE
   )
 

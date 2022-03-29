@@ -53,15 +53,19 @@ CloseBySingleRegion <- function(
   genome <- match.arg(genome)
   arrayType <- match.arg(arrayType)
   CpGsOrdered_df <- OrderCpGsByLocation(
-    CpGs_char, genome, arrayType, manifest_gr, output = "dataframe"
+    CpGs_char = CpGs_char,
+    genome = genome,
+    arrayType = arrayType,
+    manifest_gr = manifest_gr,
+    output = "dataframe"
   )
 
-  ### Find close by clusters ###
+  # Find close by clusters
   chr <- CpGsOrdered_df$chr
   pos <- CpGsOrdered_df$pos
-  CpGsOrdered_df$cluster <- clusterMaker(chr, pos, maxGap = maxGap)
+  CpGsOrdered_df$cluster <- clusterMaker(chr = chr, pos = pos, maxGap = maxGap)
 
-  ### Create list of vectors of CpGs in each cluster ###
+  # Create list of vectors of CpGs in each cluster
   CpGsRegion_ls <- split(CpGsOrdered_df$cpg, CpGsOrdered_df$cluster)
 
   ### Filter for clusters with number of CpGs >= minCpGs ###

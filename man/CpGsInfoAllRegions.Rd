@@ -11,6 +11,7 @@ CpGsInfoAllRegions(
   pheno_df,
   contPheno_char,
   covariates_char,
+  genome = c("hg19", "hg38"),
   arrayType = c("450k", "EPIC")
 )
 }
@@ -35,6 +36,8 @@ variable "Sample" for sample IDs.}
 tested against methylation values}
 
 \item{covariates_char}{character vector of covariate variables names}
+
+\item{genome}{human genome of reference hg19 (default) or hg38}
 
 \item{arrayType}{Type of array, can be "450k" or "EPIC"}
 }

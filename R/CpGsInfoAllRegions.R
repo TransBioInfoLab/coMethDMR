@@ -18,6 +18,7 @@
 #' @param contPheno_char character string of the continuous phenotype to be
 #'    tested against methylation values
 #' @param covariates_char character vector of covariate variables names
+#' @param genome human genome of reference hg19 (default) or hg38
 #' @param arrayType Type of array, can be "450k" or "EPIC"
 #'
 #' @return a data frame with locations of the genomic region (Region), CpG ID
@@ -47,27 +48,47 @@
 CpGsInfoAllRegions <- function(AllRegionNames_char,
                                allRegions_gr = NULL,
                                betas_df, pheno_df,
-                               contPheno_char, covariates_char,
+                               contPheno_char,
+                               covariates_char,
+                               genome = c("hg19", "hg38"),
                                arrayType = c("450k", "EPIC")){
-
+  
+  ###  Inputs  ###
+  
+  # Available manifest files are: 
+  #   "EPIC.hg19.manifest"  "EPIC.hg38.manifest"
+  #   "HM450.hg19.manifest" "HM450.hg38.manifest"
+  genome <- match.arg(genome)
   arrayType <- match.arg(arrayType)
+  manifest <- paste(
+    switch(arrayType, "450k" = "HM450", "EPIC" = "EPIC"),
+    genome, "manifest",
+    sep = "."
+  )
+  CpGlocations.gr <- ImportSesameData(manifest)  
+  
+  # Regions
   if (!is.null(allRegions_gr)) {
     AllRegionNames_char <- as.character(allRegions_gr)
   }
 
+  
+  ###  Apply  ###
   resultsAllRegions_ls <- lapply(
     AllRegionNames_char,
     FUN = CpGsInfoOneRegion,
     region_gr = NULL,
-    betas_df,
-    pheno_df,
-    contPheno_char,
-    covariates_char,
-    arrayType
+    betas_df = betas_df,
+    pheno_df = pheno_df,
+    contPheno_char = contPheno_char,
+    covariates_char = covariates_char,
+    arrayType = arrayType,
+    manifest_gr = CpGlocations.gr
   )
 
+  
+  ###  Return  ###
   resultsAllRegions_df <- do.call(rbind, resultsAllRegions_ls)
-
   unique(resultsAllRegions_df)
 
 }

@@ -40,8 +40,8 @@ GetCpGsInRegion <- function(
   ignoreStrand = TRUE
 ){
   
-  arrayType <- match.arg(arrayType)
   genome <- match.arg(genome)
+  arrayType <- match.arg(arrayType)
   
   
   ###  The GRanges Object  ###
@@ -65,7 +65,7 @@ GetCpGsInRegion <- function(
   } else {
     gr <- region_gr
   }
-  CpGlocations.gr <- subsetByOverlaps(CpGlocations.gr, gr)
+  CpGlocations.gr <- subsetByOverlaps(x = CpGlocations.gr, ranges = gr)
 
   OrderCpGsByLocation(
     names(CpGlocations.gr),
