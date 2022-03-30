@@ -38,7 +38,7 @@ NULL
     X = manifestsNeeded_char,
     FUN = function(char) {
       res <- AnnotationHub::query(ehub, c("sesameData", char))
-      tail(names(res[res$title == char,]),1)
+      utils::tail(names(res[res$title == char,]),n = 1)
     },
     FUN.VALUE = character(1)
   )
