@@ -37,7 +37,8 @@ NULL
   ahID_char <- vapply(
     X = manifestsNeeded_char,
     FUN = function(char) {
-      names(AnnotationHub::query(ehub, c("sesameData", char)))
+      res <- AnnotationHub::query(ehub, c("sesameData", char))
+      tail(names(res[res$title == char,]),1)
     },
     FUN.VALUE = character(1)
   )
