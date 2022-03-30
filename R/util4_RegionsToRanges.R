@@ -22,7 +22,7 @@ RegionsToRanges <- function(regionName_char){
 
   GRanges(
     seqnames = as.factor(chr),
-    ranges = IRanges(as.numeric(start), as.numeric(end))
+    ranges = IRanges(start = as.numeric(start), end = as.numeric(end))
   )
 
 }

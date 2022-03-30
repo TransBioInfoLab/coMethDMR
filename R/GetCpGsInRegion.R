@@ -7,6 +7,10 @@
 #'   region in \code{regionName_char} is used.
 #' @param genome human genome of reference hg19 (default) or hg38
 #' @param arrayType Type of array, 450k or EPIC
+#' @param manifest_gr A GRanges object with the genome manifest (as returned by
+#'   \code{\link[ExperimentHub]{ExperimentHub}} or by
+#'   \code{\link{ImportSesameData}}). This function by default ignores this
+#'   argument in favour of the \code{genome} and \code{arrayType} arguments.
 #' @param ignoreStrand Whether strand can be ignored, default is TRUE
 #'
 #' @return vector of CpG probe IDs mapped to the genomic region
@@ -32,35 +36,42 @@ GetCpGsInRegion <- function(
   region_gr = NULL,
   genome = c("hg19", "hg38"),
   arrayType = c("450k", "EPIC"),
+  manifest_gr = NULL,
   ignoreStrand = TRUE
 ){
-
-  arrayType <- match.arg(arrayType)
+  
   genome <- match.arg(genome)
-
-  # Available manifest files are
-  # "EPIC.hg19.manifest"  "EPIC.hg38.manifest"
-  # "HM27.hg19.manifest"  "HM27.hg38.manifest"
-  # "HM450.hg19.manifest" "HM450.hg38.manifest"
-  manifest <- paste(
-    ifelse(arrayType == "450k", "HM450", "EPIC"),
-    genome, "manifest",
-    sep = "."
-  )
-  CpGlocations.gr <- sesameDataGet(manifest)
-
+  arrayType <- match.arg(arrayType)
+  
+  
+  ###  The GRanges Object  ###
+  if(!is.null(manifest_gr)) {
+    CpGlocations.gr <- manifest_gr
+  } else {
+    
+    manifest <- paste(
+      switch(arrayType, "450k" = "HM450", "EPIC" = "EPIC"),
+      genome, "manifest",
+      sep = "."
+    )
+    CpGlocations.gr <- ImportSesameData(manifest)  
+    
+  }
+  
+  
   ### Split the region name in chr and positions ###
   if (is.null(region_gr)) {
     gr <- RegionsToRanges(regionName_char)
   } else {
     gr <- region_gr
   }
-  CpGlocations.gr <- subsetByOverlaps(CpGlocations.gr, gr)
+  CpGlocations.gr <- subsetByOverlaps(x = CpGlocations.gr, ranges = gr)
 
   OrderCpGsByLocation(
     names(CpGlocations.gr),
     genome = genome,
     arrayType = arrayType,
+    manifest_gr = manifest_gr,
     ignoreStrand = ignoreStrand,
     output = "vector"
   )

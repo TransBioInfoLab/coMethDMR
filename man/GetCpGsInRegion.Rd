@@ -9,6 +9,7 @@ GetCpGsInRegion(
   region_gr = NULL,
   genome = c("hg19", "hg38"),
   arrayType = c("450k", "EPIC"),
+  manifest_gr = NULL,
   ignoreStrand = TRUE
 )
 }
@@ -23,6 +24,11 @@ region in \code{regionName_char} is used.}
 \item{genome}{human genome of reference hg19 (default) or hg38}
 
 \item{arrayType}{Type of array, 450k or EPIC}
+
+\item{manifest_gr}{A GRanges object with the genome manifest (as returned by
+\code{\link[ExperimentHub]{ExperimentHub}} or by
+\code{\link{ImportSesameData}}). This function by default ignores this
+argument in favour of the \code{genome} and \code{arrayType} arguments.}
 
 \item{ignoreStrand}{Whether strand can be ignored, default is TRUE}
 }

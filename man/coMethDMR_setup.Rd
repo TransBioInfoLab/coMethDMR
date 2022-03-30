@@ -12,8 +12,8 @@
 Check if the user has both the HM540 and EPIC manifests in their
   cache. The contents of the cache are checked via a call to the
   \code{ExperimentHub} function. If not all data components are available in
-  the cache for these two platforms, we call \code{sesameDataCache} to save
-  them to the cache for later use.
+  the cache for these two platforms, we \code{\link[AnnotationHub]{query}} 
+  the necessary data to save them to the cache for later use.
 }
 \details{
 arguments are unused

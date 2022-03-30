@@ -13,6 +13,10 @@
 #'    Only regions with more than \code{minCpGs} will be returned.
 #' @param genome Human genome of reference hg19 or hg38
 #' @param arrayType Type of array, can be "450k" or "EPIC"
+#' @param manifest_gr A GRanges object with the genome manifest (as returned by
+#'   \code{\link[ExperimentHub]{ExperimentHub}} or by
+#'   \code{\link{ImportSesameData}}). This function by default ignores this
+#'   argument in favour of the \code{genome} and \code{arrayType} arguments.
 #' @param returnAllCpGs When there is not a contiguous comethylated region in
 #'    the inputing pre-defined region, \code{returnAllCpGs = 1} indicates
 #'    outputting all the CpGs in the input region, while \code{returnAllCpGs = 0}
@@ -65,6 +69,7 @@ CoMethSingleRegion <- function(CpGs_char,
                                minCpGs = 3,
                                genome = c("hg19","hg38"),
                                arrayType = c("450k","EPIC"),
+                               manifest_gr = NULL,
                                returnAllCpGs = FALSE){
   # browser()
 
@@ -72,57 +77,66 @@ CoMethSingleRegion <- function(CpGs_char,
   genome <- match.arg(genome)
   method <- match.arg(method)
 
+  
   ### Order CpGs by genomic location ###
   CpGsOrdered_df <- OrderCpGsByLocation(
-    CpGs_char, genome, arrayType, output = "dataframe"
+    CpGs_char = CpGs_char,
+    genome = genome,
+    arrayType = arrayType,
+    manifest_gr = manifest_gr,
+    output = "dataframe"
   )
 
+  
   ### Extract beta matrix for the input CpGs ###
   # take common cpgs in beta matrix and the region first
   commonCpGs_char <- intersect(CpGsOrdered_df$cpg, row.names(dnam))
 
-  if (length(commonCpGs_char) >= minCpGs){
-
-      betaCluster_mat <- dnam[commonCpGs_char, ]
-
-      ### Transpose beta matrix ###
-      betaClusterTransp_mat <- t(betaCluster_mat)
-
-      ### Mark comethylated CpGs ###
-      keepCpGs_df <- MarkComethylatedCpGs(
-        betaCluster_mat = betaClusterTransp_mat,
-        method = method,
-        betaToM = betaToM,
-        rDropThresh_num
-      )
-
-      ### Find contiguous comethylated regions ###
-      keepContiguousCpGs_df <- FindComethylatedRegions(
-        CpGs_df = keepCpGs_df
-      )
-
-      ### Split CpG dataframe by Subregion ###
-      keepContiguousCpGs_ls <- SplitCpGDFbyRegion(
-        keepContiguousCpGs_df, genome, arrayType, returnAllCpGs
-      )
-
-      ### Create Output Data Frame  ###
-      coMethCpGs_df <- CreateOutputDF(
-        keepCpGs_df, keepContiguousCpGs_df, CpGsOrdered_df, returnAllCpGs
-      )
-
-      ### Create output list of data frame and CpGs by subregion ###
-      coMethCpGs_ls <- list(
-        contiguousRegions = coMethCpGs_df,
-        CpGsSubregions = keepContiguousCpGs_ls
-      )
-
-      coMethCpGs_ls
-
-  } else {
+  if (length(commonCpGs_char) < minCpGs){
     return(NULL)
+  } else {
+    
+    ###  Mark comethylated CpGs  ###
+    betaClusterT_mat <- t( dnam[commonCpGs_char, ] )
+    
+    keepCpGs_df <- MarkComethylatedCpGs(
+      betaCluster_mat = betaClusterT_mat,
+      method = method,
+      betaToM = betaToM,
+      rDropThresh_num
+    )
+    
+    # Find contiguous comethylated regions
+    keepContiguousCpGs_df <- FindComethylatedRegions(
+      CpGs_df = keepCpGs_df
+    )
+    
+    
+    ###  Split CpG dataframe by Subregion  ###
+    keepContiguousCpGs_ls <- SplitCpGDFbyRegion(
+      CpGsSubregions_df = keepContiguousCpGs_df,
+      genome = genome,
+      arrayType = arrayType,
+      manifest_gr = manifest_gr,
+      returnAllCpGs = returnAllCpGs
+    )
+    
+    
+    ###  Create Output  ###
+    coMethCpGs_df <- CreateOutputDF(
+      keepCpGs_df = keepCpGs_df,
+      keepContiguousCpGs_df = keepContiguousCpGs_df,
+      CpGsOrdered_df = CpGsOrdered_df,
+      returnAllCpGs = returnAllCpGs
+    )
+    
+    coMethCpGs_ls <- list(
+      contiguousRegions = coMethCpGs_df,
+      CpGsSubregions = keepContiguousCpGs_ls
+    )
+    
+    coMethCpGs_ls
+    
   }
-
-
 
 }

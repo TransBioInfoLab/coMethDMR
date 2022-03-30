@@ -75,9 +75,9 @@ GetResiduals <- function(
   }
   
   if (is(value, "matrix")){
-    value_df = as.data.frame(value)
+    value_df <- as.data.frame(value)
   } else {
-    value_df = value
+    value_df <- value
   }
 
   

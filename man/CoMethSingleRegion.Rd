@@ -14,6 +14,7 @@ CoMethSingleRegion(
   minCpGs = 3,
   genome = c("hg19", "hg38"),
   arrayType = c("450k", "EPIC"),
+  manifest_gr = NULL,
   returnAllCpGs = FALSE
 )
 }
@@ -37,6 +38,11 @@ Only regions with more than \code{minCpGs} will be returned.}
 \item{genome}{Human genome of reference hg19 or hg38}
 
 \item{arrayType}{Type of array, can be "450k" or "EPIC"}
+
+\item{manifest_gr}{A GRanges object with the genome manifest (as returned by
+\code{\link[ExperimentHub]{ExperimentHub}} or by
+\code{\link{ImportSesameData}}). This function by default ignores this
+argument in favour of the \code{genome} and \code{arrayType} arguments.}
 
 \item{returnAllCpGs}{When there is not a contiguous comethylated region in
 the inputing pre-defined region, \code{returnAllCpGs = 1} indicates

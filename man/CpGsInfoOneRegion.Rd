@@ -11,7 +11,9 @@ CpGsInfoOneRegion(
   pheno_df,
   contPheno_char,
   covariates_char = NULL,
-  arrayType = c("450k", "EPIC")
+  genome = c("hg19", "hg38"),
+  arrayType = c("450k", "EPIC"),
+  manifest_gr = NULL
 )
 }
 \arguments{
@@ -33,7 +35,14 @@ tested against methylation values}
 
 \item{covariates_char}{character vector of covariate variables names}
 
+\item{genome}{human genome of reference hg19 (default) or hg38}
+
 \item{arrayType}{Type of array, can be "450k" or "EPIC"}
+
+\item{manifest_gr}{A GRanges object with the genome manifest (as returned by
+\code{\link[ExperimentHub]{ExperimentHub}} or by
+\code{\link{ImportSesameData}}). This function by default ignores this
+argument in favour of the \code{genome} and \code{arrayType} arguments.}
 }
 \value{
 a data frame with location of the genomic region (Region), CpG ID

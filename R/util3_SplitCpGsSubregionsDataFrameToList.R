@@ -6,6 +6,10 @@
 #' @param CpGsSubregions_df data frame with CpG and subregion number
 #' @param genome Human genome of reference: hg19 or hg38
 #' @param arrayType Type of array: 450k or EPIC
+#' @param manifest_gr A GRanges object with the genome manifest (as returned by
+#'   \code{\link[ExperimentHub]{ExperimentHub}} or by
+#'   \code{\link{ImportSesameData}}). This function by default ignores this
+#'   argument in favour of the \code{genome} and \code{arrayType} arguments.
 #' @param returnAllCpGs indicates if outputting all the CpGs in the region when
 #'   there is not a contiguous comethylated region or only the CpGs in the
 #'   contiguous comethylated regions
@@ -31,6 +35,7 @@ SplitCpGDFbyRegion <- function(
   CpGsSubregions_df,
   genome = c("hg19", "hg38"),
   arrayType = c("450k", "EPIC"),
+  manifest_gr = NULL,
   returnAllCpGs = TRUE
 ){
 
@@ -50,16 +55,17 @@ SplitCpGDFbyRegion <- function(
     CpGsSubregions_df$ProbeID, CpGsSubregions_df$Subregion
   )
   
-  # Output dataframes with annotation for each subregions
+  # Order each subregion
   subRegionAnnotationDF_ls <- lapply(
     X = subRegion_ls,
     FUN = OrderCpGsByLocation,
-    genome,
-    arrayType,
+    genome = genome,
+    arrayType = arrayType,
+    manifest_gr = manifest_gr,
     output = "dataframe"
   )
   
-  ### Name the comethylated subregions ###
+  # Name the comethylated subregions
   names(subRegion_ls) <- lapply(subRegionAnnotationDF_ls, NameRegion)
   
   subRegion_ls
