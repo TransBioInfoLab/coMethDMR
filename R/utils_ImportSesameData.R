@@ -23,7 +23,7 @@ ImportSesameData <- function(manifest_char) {
   # https://github.com/TransBioInfoLab/MethReg/commit/7284ce917735322762ffc3d3807d858d260c63c6
   
   # Query Data
-  ehub <- ExperimentHub::ExperimentHub(localHub = TRUE)
+  ehub <- ExperimentHub::ExperimentHub(localHub = FALSE)
   query <- AnnotationHub::query(ehub, c("sesameData", manifest_char))
   query <- query[query$title == manifest_char, ]
   
