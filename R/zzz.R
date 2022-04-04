@@ -12,6 +12,7 @@
 #' 
 #' @importFrom ExperimentHub ExperimentHub
 #' @importFrom AnnotationHub query
+#' @importFrom utils tail
 #'
 #' @details arguments are unused
 #' 
@@ -30,7 +31,7 @@ NULL
   
   ###  Check if data has been cached  ###
   packageStartupMessage("Checking for cached SeSAMe data.")
-  ehub <- ExperimentHub::ExperimentHub(localHub = TRUE)
+  ehub <- ExperimentHub::ExperimentHub(localHub = FALSE)
   cachedDataNames_char <- names(ehub)
   # platformInfo_df <- sesameData::sesameDataList()
   
@@ -38,7 +39,7 @@ NULL
     X = manifestsNeeded_char,
     FUN = function(char) {
       res <- AnnotationHub::query(ehub, c("sesameData", char))
-      utils::tail(names(res[res$title == char,]),n = 1)
+      tail(names(res[res$title == char,]),n = 1)
     },
     FUN.VALUE = character(1)
   )
