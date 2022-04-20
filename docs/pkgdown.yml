@@ -1,0 +1,8 @@
+pandoc: 2.16.2
+pkgdown: 2.0.2
+pkgdown_sha: ~
+articles:
+  vin1_Introduction_to_coMethDMR_geneBasedPipeline: vin1_Introduction_to_coMethDMR_geneBasedPipeline.html
+  vin2_BiocParallel_for_coMethDMR_geneBasedPipeline: vin2_BiocParallel_for_coMethDMR_geneBasedPipeline.html
+last_built: 2022-04-20T16:30Z
+
