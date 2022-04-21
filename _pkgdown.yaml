@@ -1,0 +1,11 @@
+title: coMethDMR
+url: https://gabrielodom.github.io/coMethDMR/
+template:
+  params:
+    bootswatch: united
+
+authors:
+  Gabriel Odom:
+    href: https://github.com/gabrielodom
+  Lily Wang:
+    href: http://biostat.med.miami.edu/people/primary-faculty/lily-wang-ph.d

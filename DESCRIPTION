@@ -53,4 +53,4 @@ biocViews:
     GenomeWideAssociation
 VignetteBuilder: knitr
 BugReports: https://github.com/TransBioInfoLab/coMethDMR/issues
-URL: https://github.com/TransBioInfoLab/coMethDMR
+URL: https://gabrielodom.github.io/coMethDMR/
