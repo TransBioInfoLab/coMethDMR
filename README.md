@@ -24,7 +24,21 @@ Assuming you have completed all pre-processing and normalization procedures, her
     + Genic regions, EPIC array: download the supplemental data file from <https://github.com/TransBioInfoLab/coMethDMR_data/blob/main/data/EPIC_10b4_Gene_3_200.rds>
     + Inter-genic regions, EPIC array: download the supplemental data file from <https://github.com/TransBioInfoLab/coMethDMR_data/blob/main/data/EPIC_10b4_InterGene_3_200.rds>
 3. **Adjust Methylation for Covariates** with the `GetResiduals()` function; your methylation values may be confounded by clinical variables unrelated to your treatment, such as sex, age, or even [the square of age](https://www.nature.com/articles/s41598-021-88504-0)
-4. **Regions of Co-Methylation**
+    + *Input*: your methylation data and covariates from **Step 1**
+    + *Output*: a matrix of methylation residuals in *probe by sample* form
+4. **Regions of Co-Methylation** with the `CoMethAllRegions()` function
+    + *Input*: the list of regions of interest from **Step 2**; the methylation residuals (or the unadjusted M-values) from **Step 3** 
+    + *Output*: either a list of data frames (if `output = "dataframe"`) or a list of vectors of probe IDs (if `output = "CpGs"`)
+        - Data Frame: one data frame per region of concurrent methylation; each data frame has a row per probe and columns for the probe ID, it's enclosing region, chromosome, correlation with the surrounding probes, and an indicator for "co"-methylation
+        - Vector of CpGs: one vector per region of concurrent methylation; the vector simply contains the probe IDs of the CpGs in each region
+5. **Detecting Regions Differential Co-Methylation** with `lmmTestAllRegions()`; this function performs a linear mixed model test to detect, from regions of concurrent methylation, which regions have differential methylation across the majority of probes (so that one single probe cannot influence the entire region)
+    + *Input*: the methylation and clinical data from **Step 1** and the regions of concurrent methylation from **Step 4**
+    + *Output*: a data frame with
+        - one row per region, and
+        - columns for the region chromosome and range, the number of CpGs in the region, and the linear mixed model summaries for that region (including regression slope estimate, standard error, test statistic, $p$-value, and false discovery rate)
+6. **Annotate Statistically Significant Regions** with `AnnotateResults()`; this function takes the linear mixed model summaries by region from **Step 5** and adds on reference gene symbols and their relationships to known CpG islands
+
+See our 
 
 
 

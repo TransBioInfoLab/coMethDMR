@@ -43,7 +43,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">coMethDMR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.17</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.18</span>
       </span>
     </div>
 
@@ -128,9 +128,48 @@
 </li>
 <li>
 <strong>Adjust Methylation for Covariates</strong> with the <code><a href="reference/GetResiduals.html">GetResiduals()</a></code> function; your methylation values may be confounded by clinical variables unrelated to your treatment, such as sex, age, or even <a href="https://www.nature.com/articles/s41598-021-88504-0" class="external-link">the square of age</a>
+<ul>
+<li>
+<em>Input</em>: your methylation data and covariates from <strong>Step 1</strong>
 </li>
-<li><strong>Regions of Co-Methylation</strong></li>
+<li>
+<em>Output</em>: a matrix of methylation residuals in <em>probe by sample</em> form</li>
+</ul>
+</li>
+<li>
+<strong>Regions of Co-Methylation</strong> with the <code><a href="reference/CoMethAllRegions.html">CoMethAllRegions()</a></code> function
+<ul>
+<li>
+<em>Input</em>: the list of regions of interest from <strong>Step 2</strong>; the methylation residuals (or the unadjusted M-values) from <strong>Step 3</strong>
+</li>
+<li>
+<em>Output</em>: either a list of data frames (if <code>output = "dataframe"</code>) or a list of vectors of probe IDs (if <code>output = "CpGs"</code>)
+<ul>
+<li>Data Frame: one data frame per region of concurrent methylation; each data frame has a row per probe and columns for the probe ID, it’s enclosing region, chromosome, correlation with the surrounding probes, and an indicator for “co”-methylation</li>
+<li>Vector of CpGs: one vector per region of concurrent methylation; the vector simply contains the probe IDs of the CpGs in each region</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<strong>Detecting Regions Differential Co-Methylation</strong> with <code><a href="reference/lmmTestAllRegions.html">lmmTestAllRegions()</a></code>; this function performs a linear mixed model test to detect, from regions of concurrent methylation, which regions have differential methylation across the majority of probes (so that one single probe cannot influence the entire region)
+<ul>
+<li>
+<em>Input</em>: the methylation and clinical data from <strong>Step 1</strong> and the regions of concurrent methylation from <strong>Step 4</strong>
+</li>
+<li>
+<em>Output</em>: a data frame with
+<ul>
+<li>one row per region, and</li>
+<li>columns for the region chromosome and range, the number of CpGs in the region, and the linear mixed model summaries for that region (including regression slope estimate, standard error, test statistic, <span class="math inline"><em>p</em></span>-value, and false discovery rate)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<strong>Annotate Statistically Significant Regions</strong> with <code><a href="reference/AnnotateResults.html">AnnotateResults()</a></code>; this function takes the linear mixed model summaries by region from <strong>Step 5</strong> and adds on reference gene symbols and their relationships to known CpG islands</li>
 </ol>
+<p>See our</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
