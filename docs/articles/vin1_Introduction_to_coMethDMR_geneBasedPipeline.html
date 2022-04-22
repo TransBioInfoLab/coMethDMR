@@ -108,7 +108,7 @@
 <span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"coMethDMR"</span><span class="op">)</span></code></pre></div>
 <p>After installation, the <code>coMethDMR</code> package can be loaded into R using:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/TransBioInfoLab/coMethDMR" class="external-link">coMethDMR</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gabrielodom.github.io/coMethDMR/" class="external-link">coMethDMR</a></span><span class="op">)</span></code></pre></div>
 <p>If you are running the <code>coMethDMR</code> package for the first time, you will also need to download supplemental data sets from the <code>sesameData</code> package. This happens automatically for the 450k and EPIC arrays when you load <code>coMethDMR</code> for the first time. If you experience errors in this process, you may have your cache in an older default location. Please follow these steps to update where these genomic data are stored: <a href="https://bioconductor.org/packages/devel/bioc/vignettes/ExperimentHub/inst/doc/ExperimentHub.html#default-caching-location-update" class="external-link uri">https://bioconductor.org/packages/devel/bioc/vignettes/ExperimentHub/inst/doc/ExperimentHub.html#default-caching-location-update</a>.</p>
 </div>
 <div class="section level3">
@@ -187,7 +187,7 @@
 <pre><code><span class="co">## snapshotDate(): 2021-05-18</span></code></pre>
 <pre><code><span class="co">## see ?sesameData and browseVignettes('sesameData') for documentation</span></code></pre>
 <pre><code><span class="co">##    user  system elapsed </span>
-<span class="co">##   13.02    1.67   15.27</span></code></pre>
+<span class="co">##   12.94    1.66   15.11</span></code></pre>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># ~15 seconds</span>
 
@@ -206,7 +206,7 @@
 <code class="sourceCode R"><span class="va">WriteCorrPlot</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">beta_mat</span><span class="op">)</span><span class="op">{</span>
 
   <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://github.com/taiyun/corrplot" class="external-link">corrplot</a></span><span class="op">)</span>
-  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://github.com/TransBioInfoLab/coMethDMR" class="external-link">coMethDMR</a></span><span class="op">)</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://gabrielodom.github.io/coMethDMR/" class="external-link">coMethDMR</a></span><span class="op">)</span>
 
   <span class="va">CpGs_char</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/row.names.html" class="external-link">row.names</a></span><span class="op">(</span><span class="va">beta_mat</span><span class="op">)</span>
 
@@ -273,7 +273,7 @@
   <span class="op">)</span>
 <span class="op">)</span></code></pre></div>
 <pre><code><span class="co">##    user  system elapsed </span>
-<span class="co">##    7.66    1.33    9.00</span></code></pre>
+<span class="co">##    7.77    1.20    8.99</span></code></pre>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># ~12 seconds</span>
 
@@ -625,7 +625,7 @@
 <span class="co">## other attached packages:</span>
 <span class="co">##  [1] corrplot_0.92       sesameData_1.13.3   rmarkdown_2.11     </span>
 <span class="co">##  [4] ExperimentHub_2.0.0 AnnotationHub_3.0.2 BiocFileCache_2.0.0</span>
-<span class="co">##  [7] dbplyr_2.1.1        BiocGenerics_0.38.0 coMethDMR_0.99.17  </span>
+<span class="co">##  [7] dbplyr_2.1.1        BiocGenerics_0.38.0 coMethDMR_0.99.18  </span>
 <span class="co">## [10] BiocStyle_2.20.2   </span>
 <span class="co">## </span>
 <span class="co">## loaded via a namespace (and not attached):</span>
