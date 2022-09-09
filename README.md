@@ -46,7 +46,7 @@ See our use manuals at <https://gabrielodom.github.io/coMethDMR/>
 
 
 ### Bioconductor Version
-The `coMethDMR::` package has been accepted to the [Bioconductor](https://bioconductor.org/) repository of R packages. It will be included in version 3.15 (April 2022 release). To install [this version](https://www.bioconductor.org/packages/devel/bioc/html/coMethDMR.html), please use the following code:
+The `coMethDMR::` package has been included in the [Bioconductor](https://bioconductor.org/) repository of R packages. To install [this version](https://www.bioconductor.org/packages/release/bioc/html/coMethDMR.html), please use the following code:
 ```
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
