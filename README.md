@@ -38,7 +38,7 @@ Assuming you have completed all pre-processing and normalization procedures, her
         - columns for the region chromosome and range, the number of CpGs in the region, and the linear mixed model summaries for that region (including regression slope estimate, standard error, test statistic, $p$-value, and false discovery rate)
 6. **Annotate Statistically Significant Regions** with `AnnotateResults()`; this function takes the linear mixed model summaries by region from **Step 5** and adds on reference gene symbols and their relationships to known CpG islands
 
-See our use manuals at <https://gabrielodom.github.io/coMethDMR/>
+See details in user manuals below or from [Bioconductor repository](https://www.bioconductor.org/packages/release/bioc/manuals/coMethDMR/man/coMethDMR.pdf). 
 
 
 
