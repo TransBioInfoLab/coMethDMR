@@ -23,6 +23,8 @@ Assuming you have completed all pre-processing and normalization procedures, her
     + Inter-genic regions, 450k array: `extdata/450k_InterGene_3_200.rds`.Load this via `system.file("extdata", "450k_InterGene_3_200.rds", package = "coMethDMR", mustWork = TRUE)`
     + Genic regions, EPIC array: download the supplemental data file from <https://github.com/TransBioInfoLab/coMethDMR_data/blob/main/data/EPIC_10b4_Gene_3_200.rds>
     + Inter-genic regions, EPIC array: download the supplemental data file from <https://github.com/TransBioInfoLab/coMethDMR_data/blob/main/data/EPIC_10b4_InterGene_3_200.rds>
+    + Both Genic and Inter-genic regions, 450k array: downlaod the supplemental data file [hg19 data](https://github.com/TransBioInfoLab/coMethDMR_data/blob/main/data/450k_All_3_200_hg19.rds) or [hg38 data](https://github.com/TransBioInfoLab/coMethDMR_data/blob/main/data/450k_All_3_200_hg38.rds)
+    + Both Genic and Inter-genic regions, EPIC array: downlaod the supplemental data file [hg19 data](https://github.com/TransBioInfoLab/coMethDMR_data/blob/main/data/EPIC_10b4_All_3_200_hg19.rds) or [hg38 data](https://github.com/TransBioInfoLab/coMethDMR_data/blob/main/data/EPIC_10b4_All_3_200_hg38.rds)
 3. **Adjust Methylation for Covariates** with the `GetResiduals()` function; your methylation values may be confounded by clinical variables unrelated to your treatment, such as sex, age, or even [the square of age](https://www.nature.com/articles/s41598-021-88504-0)
     + *Input*: your methylation data and covariates from **Step 1**
     + *Output*: a matrix of methylation residuals in *probe by sample* form
