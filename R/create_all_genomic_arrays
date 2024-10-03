@@ -68,7 +68,7 @@ get_array_ranges <- function(
   anno_gr
 }
 
-create_genomic_array <- function(
+create_genomic_array_range <- function(
     array = c("450k", "EPIC"), genome = c("hg19", "hg38")
 ) {
   array <- match.arg(array)
@@ -88,9 +88,9 @@ create_genomic_array <- function(
   )
 }
 
-create_all_genomic_arrays <- function() {
-  create_genomic_array(array = "450k", genome = "hg19")
-  create_genomic_array(array = "450k", genome = "hg38")
-  create_genomic_array(array = "EPIC", genome = "hg19")
-  create_genomic_array(array = "EPIC", genome = "hg38")
+create_all_genomic_array_ranges <- function() {
+  create_genomic_array_range(array = "450k", genome = "hg19")
+  create_genomic_array_range(array = "450k", genome = "hg38")
+  create_genomic_array_range(array = "EPIC", genome = "hg19")
+  create_genomic_array_range(array = "EPIC", genome = "hg38")
 }
