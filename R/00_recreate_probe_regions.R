@@ -1,0 +1,96 @@
+get_annotation_range <- function(array = c("450k", "EPIC")) {
+  array <- match.arg(array)
+  
+  if (array == "450k"){
+    minfi_object <- utils::data(
+      "IlluminaHumanMethylation450kanno.ilmn12.hg19",
+      package = "IlluminaHumanMethylation450kanno.ilmn12.hg19"
+    )
+  } else {
+    minfi_object <- utils::data(
+      "IlluminaHumanMethylationEPICanno.ilm10b4.hg19",
+      package = "IlluminaHumanMethylationEPICanno.ilm10b4.hg19"
+    )
+  }
+  
+  anno_df <- minfi_object %>%
+    minfi::getAnnotation() %>%
+    GenomicRanges::makeGRangesFromDataFrame(
+      start.field = "pos", end.field = "pos", keep.extra.columns = TRUE
+    ) %>%
+    as.data.frame() %>%
+    dplyr::select("Name", "seqnames", "start", "end") %>%
+    dplyr::filter(!(.data$seqnames %in% c("chrX", "chrY")))
+  
+  anno_df
+}
+
+convert_to_hg38 <- function(anno_df) {
+  hg19tohg38.ch <- readRDS(file.path("inst", "extdata", "hg19tohg38.ch.rds"))
+  
+  anno_gr <- GenomicRanges::GRanges(
+    seqnames = anno_df$seqnames,
+    ranges = IRanges::IRanges(start = anno_df$start, end = anno_df$end),
+    Name = anno_df$Name
+  )
+  anno_df <- rtracklayer::liftOver(anno_gr, hg19tohg38.ch) %>%
+    unlist() %>%
+    as.data.frame() %>%
+    dplyr::select("Name", "seqnames", "start", "end")
+  
+  anno_df
+}
+
+create_genomic_ranges <- function(anno_df) {
+  range_df <- anno_df %>%
+    dplyr::select("seqnames", "start", "end") %>%
+    dplyr::group_by(.data$seqnames) %>%
+    dplyr::summarise(start = min(.data$start), end = max(.data$end)) %>%
+    dplyr::mutate(range = paste0(.data$start, "-", .data$end))
+  
+  GenomicRanges::GRanges(
+    seqnames = range_df$seqnames,
+    ranges = range_df$range
+  )
+}
+
+get_array_ranges <- function(
+    array = c("450k", "EPIC"), genome = c("hg19", "hg38")
+) {
+  array <- match.arg(array)
+  genome <- match.arg(genome)
+  anno_df <- get_annotation_range(array)
+  if (genome == "hg38") {
+    anno_df <- convert_to_hg38(anno_df)
+  }
+  anno_gr <- create_genomic_ranges(anno_df)
+  
+  anno_gr
+}
+
+create_genomic_array <- function(
+    array = c("450k", "EPIC"), genome = c("hg19", "hg38")
+) {
+  array <- match.arg(array)
+  genome <- match.arg(genome)
+  
+  region_gr <- get_array_ranges(array = array, genome = genome)
+  savename <- paste0(array, "_All_3_200_", genome, ".rds")
+  
+  coMethDMR::WriteCloseByAllRegions(
+    fileName = savename,
+    regions = region_gr,
+    genome = genome,
+    arrayType = array,
+    ignoreStrand = TRUE,
+    maxGap = 200,
+    minCpGs = 3
+  )
+}
+
+create_all_genomic_arrays <- function() {
+  create_genomic_array(array = "450k", genome = "hg19")
+  create_genomic_array(array = "450k", genome = "hg38")
+  create_genomic_array(array = "EPIC", genome = "hg19")
+  create_genomic_array(array = "EPIC", genome = "hg38")
+}
